@@ -17,7 +17,7 @@ export class DocumentService {
     const buffer = Buffer.from(arrayBuffer);
 
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const pdfParse = require("pdf-parse");
+    const pdfParse = require("pdf-parse/lib/pdf-parse.js");
     const parsed = await pdfParse(buffer);
 
     const content = parsed.text;
