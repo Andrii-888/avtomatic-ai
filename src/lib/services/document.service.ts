@@ -9,18 +9,26 @@ export class DocumentService {
     if (!document) throw new Error("Document not found");
     if (!document.blobUrl) throw new Error("No file URL");
 
-    // Скачиваем файл из Supabase по URL
     const response = await fetch(document.blobUrl);
     if (!response.ok) throw new Error("Failed to fetch file from storage");
 
     const arrayBuffer = await response.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
 
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const pdfParse = require("pdf-parse");
-    const parsed = await pdfParse(buffer);
+    const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs");
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "";
 
-    const content = parsed.text;
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+    let content = "";
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const textContent = await page.getTextContent();
+      content +=
+        textContent.items
+          .map((item: any) => ("str" in item ? item.str : ""))
+          .join(" ") + "\n";
+    }
+
     const contentLength = content.length;
 
     await prisma.document.update({
