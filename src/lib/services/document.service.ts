@@ -1,3 +1,4 @@
+import { extractText } from "unpdf";
 import { prisma } from "@/lib/prisma";
 
 export class DocumentService {
@@ -15,18 +16,8 @@ export class DocumentService {
     const arrayBuffer = await response.arrayBuffer();
     const buffer = new Uint8Array(arrayBuffer);
 
-    // pdf-parse v2 exposes a PDFParse class (the v1 callable default export is gone).
-    const { PDFParse } = await import("pdf-parse");
-    const parser = new PDFParse({ data: buffer });
-
-    let content: string;
-    try {
-      const parsed = await parser.getText();
-      content = parsed.text;
-    } finally {
-      await parser.destroy();
-    }
-
+    // unpdf ships a serverless build of PDF.js, so no DOMMatrix polyfill is needed.
+    const { text: content } = await extractText(buffer, { mergePages: true });
     const contentLength = content.length;
 
     await prisma.document.update({
