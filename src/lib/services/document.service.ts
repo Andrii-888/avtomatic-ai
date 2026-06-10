@@ -1,6 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import fs from "fs";
-import path from "path";
 
 export class DocumentService {
   async extractText(documentId: string): Promise<string> {
@@ -9,11 +7,14 @@ export class DocumentService {
     });
 
     if (!document) throw new Error("Document not found");
-    if (!document.storageKey) throw new Error("No storage key");
+    if (!document.blobUrl) throw new Error("No file URL");
 
-    // Читаем файл локально (для local provider)
-    const filePath = path.join(process.cwd(), "public", document.storageKey);
-    const buffer = fs.readFileSync(filePath);
+    // Скачиваем файл из Supabase по URL
+    const response = await fetch(document.blobUrl);
+    if (!response.ok) throw new Error("Failed to fetch file from storage");
+
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
 
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const pdfParse = require("pdf-parse");
