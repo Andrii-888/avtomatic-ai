@@ -6,19 +6,20 @@ const documentService = new DocumentService();
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+
     const document = await prisma.document.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!document) {
       return NextResponse.json({ error: "Document not found" }, { status: 404 });
     }
 
-    // Запускаем обработку асинхронно
-    documentService.process(params.id).catch(console.error);
+    documentService.process(id).catch(console.error);
 
     return NextResponse.json({ status: "processing started" });
   } catch (error) {
