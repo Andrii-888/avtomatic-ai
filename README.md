@@ -1,36 +1,128 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Avtomatic.AI — AI Document Assistant
 
-## Getting Started
+Smart automation and AI-powered document processing for businesses.
 
-First, run the development server:
+**Live demo:** https://avtomatic-ai.vercel.app
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## What is this?
+
+Avtomatic.AI is a demo product that shows how AI can help businesses work with documents automatically — upload a PDF, get AI analysis, ask questions about the document.
+
+Built as a portfolio project to demonstrate AI automation capabilities for Swiss SMEs.
+
+---
+
+## Current Status
+
+### ✅ Sprint 1 — Done
+
+- Landing page with positioning
+- PDF upload and storage
+- Documents list with search
+- Document viewer (PDF preview)
+- Responsive layout (mobile + desktop)
+- PostgreSQL database (Neon)
+- Deployed on Vercel
+
+### 🔄 Sprint 2 — In Progress
+
+- Claude API integration
+- Automatic document type detection (Invoice, Contract, CV, Insurance)
+- Key field extraction (parties, dates, amounts)
+- Document summary generation
+
+### ⬜ Sprint 3 — Planned
+
+- Chat with document (ask questions, get answers)
+- Chat history saved to database
+
+### ⬜ Sprint 4 — Planned
+
+- Search across all documents
+- Filters by type, date, status
+
+### ⬜ Sprint 5 — Planned
+
+- RAG (search by document content)
+- Vector embeddings
+- Multi-document search
+
+---
+
+## Tech Stack
+
+| Layer     | Technology                                  |
+| --------- | ------------------------------------------- |
+| Framework | Next.js 16 (App Router)                     |
+| UI        | React 19, Tailwind CSS v4, shadcn/ui        |
+| Database  | PostgreSQL via Prisma 7 + Neon (serverless) |
+| Storage   | Local filesystem (dev) / Vercel Blob (prod) |
+| AI        | Anthropic Claude API (coming Sprint 2)      |
+| Deploy    | Vercel                                      |
+
+---
+
+## Data Model
+
+```prisma
+Document     — id, title, type, summary, content, blobUrl, status, createdAt
+Extraction   — id, documentId, data (JSON)   ← AI extracted fields
+ChatMessage  — id, documentId, role, content ← chat history
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Local Development
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+# Install dependencies
+npm install
 
-## Learn More
+# Set up environment variables
+cp .env.example .env.local
+# Add DATABASE_URL from neon.tech
 
-To learn more about Next.js, take a look at the following resources:
+# Run database migrations
+npx prisma migrate dev
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Generate Prisma client
+npx prisma generate
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Start development server
+npm run dev
+```
 
-## Deploy on Vercel
+Open [http://localhost:3000](http://localhost:3000)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Environment Variables
+
+DATABASE_URL=postgresql://... # Neon PostgreSQL
+BLOB_READ_WRITE_TOKEN=... # Vercel Blob (for production uploads)
+ANTHROPIC_API_KEY=... # Claude API (Sprint 2)
+
+---
+
+## Project Structure
+
+src/
+├── app/
+│ ├── page.tsx # Landing page
+│ ├── demo/
+│ │ ├── page.tsx # Documents list
+│ │ └── doc/[id]/page.tsx # Document viewer
+│ └── api/documents/
+│ ├── route.ts # GET /api/documents
+│ ├── upload/route.ts # POST /api/documents/upload
+│ └── [id]/route.ts # GET /api/documents/[id]
+├── lib/
+│ └── prisma.ts # Prisma client singleton
+└── generated/
+└── prisma/ # Generated Prisma client
+
+---
+
+Built with ☕ and Claude API
