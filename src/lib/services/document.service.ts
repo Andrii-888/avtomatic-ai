@@ -13,22 +13,20 @@ export class DocumentService {
     if (!response.ok) throw new Error("Failed to fetch file from storage");
 
     const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
 
-    const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs");
-    pdfjsLib.GlobalWorkerOptions.workerSrc = "";
-
-    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-
-    let content = "";
-    for (let i = 1; i <= pdf.numPages; i++) {
-      const page = await pdf.getPage(i);
-      const textContent = await page.getTextContent();
-      content +=
-        textContent.items
-          .map((item: any) => ("str" in item ? item.str : ""))
-          .join(" ") + "\n";
+    // Полифилл для DOMMatrix
+    if (typeof globalThis.DOMMatrix === "undefined") {
+      (globalThis as any).DOMMatrix = class DOMMatrix {
+        constructor() {}
+      };
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const pdfParse = require("pdf-parse");
+    const parsed = await pdfParse(buffer);
+
+    const content = parsed.text;
     const contentLength = content.length;
 
     await prisma.document.update({
