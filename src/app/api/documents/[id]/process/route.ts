@@ -19,9 +19,13 @@ export async function POST(
       return NextResponse.json({ error: "Document not found" }, { status: 404 });
     }
 
-    documentService.process(id).catch(console.error);
+    await documentService.process(id);
 
-    return NextResponse.json({ status: "processing started" });
+    const updated = await prisma.document.findUnique({ where: { id } });
+    return NextResponse.json({ 
+      status: updated?.status, 
+      contentLength: updated?.contentLength 
+    });
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Unknown error" },
