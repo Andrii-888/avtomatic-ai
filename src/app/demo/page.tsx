@@ -25,7 +25,15 @@ export default function DemoPage() {
   };
 
   useEffect(() => {
-    fetchDocuments();
+    let active = true;
+    (async () => {
+      const res = await fetch("/api/documents");
+      const data = await res.json();
+      if (active) setDocuments(data.documents || []);
+    })();
+    return () => {
+      active = false;
+    };
   }, []);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {

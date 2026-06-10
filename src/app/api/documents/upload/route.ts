@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const storage = getStorageProvider();
+    const storage = await getStorageProvider();
 
     const { key, url } = await storage.upload(file, {
       filename: file.name,

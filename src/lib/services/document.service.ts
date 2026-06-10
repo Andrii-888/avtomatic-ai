@@ -13,20 +13,20 @@ export class DocumentService {
     if (!response.ok) throw new Error("Failed to fetch file from storage");
 
     const arrayBuffer = await response.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    const buffer = new Uint8Array(arrayBuffer);
 
-    // Полифилл для DOMMatrix
-    if (typeof globalThis.DOMMatrix === "undefined") {
-      (globalThis as any).DOMMatrix = class DOMMatrix {
-        constructor() {}
-      };
+    // pdf-parse v2 exposes a PDFParse class (the v1 callable default export is gone).
+    const { PDFParse } = await import("pdf-parse");
+    const parser = new PDFParse({ data: buffer });
+
+    let content: string;
+    try {
+      const parsed = await parser.getText();
+      content = parsed.text;
+    } finally {
+      await parser.destroy();
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const pdfParse = require("pdf-parse");
-    const parsed = await pdfParse(buffer);
-
-    const content = parsed.text;
     const contentLength = content.length;
 
     await prisma.document.update({
