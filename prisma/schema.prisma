@@ -8,14 +8,16 @@ datasource db {
 }
 
 model Document {
-  id        String   @id @default(cuid())
-  title     String
-  type      String?
-  summary   String?
-  content   String?
-  blobUrl   String?
-  status    String   @default("UPLOADED")
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  title      String
+  type       String?
+  summary    String?
+  content    String?
+  storageKey String?
+  blobUrl    String?
+  status     String   @default("UPLOADED")
+  errorMsg   String?
+  createdAt  DateTime @default(now())
 
   extractions Extraction[]
   messages    ChatMessage[]

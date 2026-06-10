@@ -17,13 +17,13 @@ export default function Home() {
       {/* Hero */}
       <section className="max-w-3xl mx-auto px-6 py-24 text-center">
         <h1 className="text-5xl font-bold tracking-tight mb-6">
-          Smart Automation for
+          Turn Contracts, Invoices and PDFs
           <br />
-          Your Business
+          into Structured Data with AI
         </h1>
         <p className="text-muted-foreground text-xl mb-10">
-          We help SMEs automate repetitive work using AI, custom software and
-          intelligent workflows.
+          Upload a document, extract key information, and ask questions in
+          seconds.
         </p>
         <Link
           href="/demo"

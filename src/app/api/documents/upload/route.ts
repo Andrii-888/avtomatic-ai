@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
+import { getStorageProvider } from "@/lib/storage";
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,20 +18,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    const storage = getStorageProvider();
 
-    const uploadDir = path.join(process.cwd(), "public/uploads");
-    await mkdir(uploadDir, { recursive: true });
-
-    const filename = `${Date.now()}-${file.name}`;
-    const filepath = path.join(uploadDir, filename);
-    await writeFile(filepath, buffer);
+    const { key, url } = await storage.upload(file, {
+      filename: file.name,
+      contentType: file.type,
+      size: file.size,
+    });
 
     const document = await prisma.document.create({
       data: {
         title: file.name,
-        blobUrl: `/uploads/${filename}`,
+        storageKey: key,
+        blobUrl: url,
         status: "UPLOADED",
       },
     });
