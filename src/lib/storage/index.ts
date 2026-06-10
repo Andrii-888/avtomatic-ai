@@ -8,6 +8,11 @@ export function getStorageProvider(): StorageProvider {
     return new R2StorageProvider();
   }
 
+  if (provider === "supabase") {
+    const { SupabaseStorageProvider } = require("./supabase");
+    return new SupabaseStorageProvider();
+  }
+
   const { LocalStorageProvider } = require("./local");
   return new LocalStorageProvider();
 }
