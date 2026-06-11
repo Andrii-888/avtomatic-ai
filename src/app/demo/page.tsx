@@ -98,7 +98,7 @@ export default function DemoPage() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Nav */}
-      <nav className="border-b px-6 h-16 flex items-center justify-between">
+      <nav className="border-b px-6 sm:px-10 h-16 flex items-center justify-between">
         <Logo />
         <span className="text-sm text-muted-foreground">
           AI Document Assistant

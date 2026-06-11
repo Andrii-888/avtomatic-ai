@@ -114,7 +114,7 @@ export default function DocumentViewerPage({
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
       {/* Nav */}
-      <nav className="flex items-center justify-between gap-3 border-b px-6 h-16">
+      <nav className="flex items-center justify-between gap-3 border-b px-6 sm:px-10 h-16">
         <Logo />
         <Link
           href="/demo"

@@ -205,7 +205,7 @@ export default function Home() {
       {/* WHAT WE SOLVE */}
       <section id="features" className="border-t scroll-mt-16">
         <div className="mx-auto max-w-6xl px-6 py-20 sm:px-10 sm:py-24">
-          <div className="max-w-2xl">
+          <div className="mx-auto max-w-2xl text-center">
             <h2 className="font-display text-3xl font-medium tracking-tight sm:text-4xl">
               What we solve
             </h2>
@@ -225,7 +225,7 @@ export default function Home() {
       {/* HOW IT WORKS */}
       <section id="how" className="border-t bg-card/40 scroll-mt-16">
         <div className="mx-auto max-w-6xl px-6 py-20 sm:px-10 sm:py-24">
-          <h2 className="font-display text-3xl font-medium tracking-tight sm:text-4xl">
+          <h2 className="text-center font-display text-3xl font-medium tracking-tight sm:text-4xl">
             How it works
           </h2>
 
@@ -251,7 +251,7 @@ export default function Home() {
       {/* WHO IS IT FOR */}
       <section className="border-t">
         <div className="mx-auto max-w-6xl px-6 py-20 sm:px-10 sm:py-24">
-          <h2 className="font-display text-3xl font-medium tracking-tight sm:text-4xl">
+          <h2 className="text-center font-display text-3xl font-medium tracking-tight sm:text-4xl">
             Who is it for
           </h2>
 

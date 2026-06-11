@@ -20,7 +20,7 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: "Avtomatic.AI — Turn documents into structured data",
+  title: "Avtomatic.AI",
   description:
     "Privacy-first AI document assistant for businesses. Extract structured data from contracts, invoices and PDFs — locally. Your files never leave your infrastructure.",
 };
