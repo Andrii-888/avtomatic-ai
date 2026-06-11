@@ -1,6 +1,7 @@
 import { writeFile, mkdir, unlink } from "fs/promises";
 import path from "path";
 import { StorageProvider } from "./types";
+import { buildStorageKey } from "./key";
 
 export class LocalStorageProvider implements StorageProvider {
   private uploadDir: string;
@@ -17,7 +18,7 @@ export class LocalStorageProvider implements StorageProvider {
   ): Promise<{ key: string; url: string }> {
     await mkdir(this.uploadDir, { recursive: true });
 
-    const key = `${Date.now()}-${metadata.filename}`;
+    const key = buildStorageKey(metadata.filename);
     const filepath = path.join(this.uploadDir, key);
 
     let buffer: Buffer;

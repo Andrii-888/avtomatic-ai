@@ -47,15 +47,31 @@ export default function DemoPage() {
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (file.size > 15 * 1024 * 1024) {
+      alert("File too large (max 15 MB).");
+      e.target.value = "";
+      return;
+    }
+
     setUploading(true);
-    const formData = new FormData();
-    formData.append("file", file);
-    const res = await fetch("/api/documents/upload", {
-      method: "POST",
-      body: formData,
-    });
-    if (res.ok) await fetchDocuments();
-    setUploading(false);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/documents/upload", {
+        method: "POST",
+        body: formData,
+      });
+      if (res.ok) {
+        await fetchDocuments();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        alert(data.error || "Upload failed.");
+      }
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
   };
 
   const handleDelete = async (e: React.MouseEvent, id: string) => {

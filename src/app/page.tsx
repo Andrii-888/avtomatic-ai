@@ -12,6 +12,7 @@ import {
   Users,
   ShieldCheck,
   Lock,
+  Flame,
 } from "lucide-react";
 
 const GITHUB_URL = "https://github.com/Andrii-888/avtomatic-ai";
@@ -167,7 +168,7 @@ export default function Home() {
       {/* NAV */}
       <nav className="sticky top-0 z-20 flex h-16 items-center justify-between border-b bg-background/80 px-6 backdrop-blur sm:px-10">
         <Link href="/" className="flex items-center gap-2">
-          <span className="h-2 w-2 rounded-[2px] bg-green-600" />
+          <Flame className="h-5 w-5 text-orange-500" />
           <span className="text-lg font-semibold tracking-tight">
             Avtomatic.AI
           </span>
@@ -323,7 +324,7 @@ export default function Home() {
             {/* Brand */}
             <div className="lg:col-span-2">
               <Link href="/" className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-[2px] bg-green-600" />
+                <Flame className="h-5 w-5 text-orange-500" />
                 <span className="text-lg font-semibold tracking-tight">
                   Avtomatic.AI
                 </span>

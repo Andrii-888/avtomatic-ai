@@ -4,6 +4,7 @@ import {
   DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
 import { StorageProvider } from "./types";
+import { buildStorageKey } from "./key";
 
 export class R2StorageProvider implements StorageProvider {
   private client: S3Client;
@@ -28,7 +29,7 @@ export class R2StorageProvider implements StorageProvider {
     file: File | Blob | Buffer,
     metadata: { filename: string; contentType: string; size?: number }
   ): Promise<{ key: string; url: string }> {
-    const key = `${Date.now()}-${metadata.filename}`;
+    const key = buildStorageKey(metadata.filename);
 
     let buffer: Buffer;
     if (Buffer.isBuffer(file)) {
