@@ -11,6 +11,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import Link from "next/link";
+import { Logo } from "@/components/logo";
 
 interface ExtractionData {
   documentType: string;
@@ -114,9 +115,7 @@ export default function DocumentViewerPage({
     <div className="flex min-h-screen flex-col bg-background text-foreground">
       {/* Nav */}
       <nav className="flex items-center justify-between gap-3 border-b px-6 h-16">
-        <Link href="/" className="font-bold text-xl tracking-tight">
-          Avtomatic.AI
-        </Link>
+        <Logo />
         <Link
           href="/demo"
           className="flex items-center gap-2 text-sm text-muted-foreground transition hover:text-foreground"

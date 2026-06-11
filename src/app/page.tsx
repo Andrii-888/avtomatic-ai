@@ -12,8 +12,8 @@ import {
   Users,
   ShieldCheck,
   Lock,
-  Flame,
 } from "lucide-react";
+import { Logo } from "@/components/logo";
 
 const GITHUB_URL = "https://github.com/Andrii-888/avtomatic-ai";
 
@@ -167,12 +167,7 @@ export default function Home() {
     <main className="flex min-h-screen flex-col bg-background text-foreground">
       {/* NAV */}
       <nav className="sticky top-0 z-20 flex h-16 items-center justify-between border-b bg-background/80 px-6 backdrop-blur sm:px-10">
-        <Link href="/" className="flex items-center gap-2">
-          <Flame className="h-5 w-5 text-orange-500" />
-          <span className="text-lg font-semibold tracking-tight">
-            Avtomatic.AI
-          </span>
-        </Link>
+        <Logo />
         <Link
           href="/demo"
           className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
@@ -323,12 +318,7 @@ export default function Home() {
           <div className="grid gap-10 border-t pt-12 sm:grid-cols-2 lg:grid-cols-4">
             {/* Brand */}
             <div className="lg:col-span-2">
-              <Link href="/" className="flex items-center gap-2">
-                <Flame className="h-5 w-5 text-orange-500" />
-                <span className="text-lg font-semibold tracking-tight">
-                  Avtomatic.AI
-                </span>
-              </Link>
+              <Logo />
               <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
                 Document intelligence for business. From PDF to structured data
                 — locally, without sending data anywhere.
