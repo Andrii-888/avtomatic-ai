@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { FileText, Upload, Search, Loader2, X, Zap } from "lucide-react";
 import Link from "next/link";
 import { Logo } from "@/components/logo";
@@ -23,9 +23,10 @@ const statusColor: Record<string, string> = {
 export default function DemoPage() {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [uploading, setUploading] = useState(false);
-  const [analyzing, setAnalyzing] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  // Active status-polling intervals, keyed by document id.
+  const pollRef = useRef<Record<string, ReturnType<typeof setInterval>>>({});
 
   const fetchDocuments = async () => {
     const res = await fetch("/api/documents");
@@ -33,15 +34,67 @@ export default function DemoPage() {
     setDocuments(data.documents || []);
   };
 
+  const stopPolling = useCallback((id: string) => {
+    const timer = pollRef.current[id];
+    if (timer) {
+      clearInterval(timer);
+      delete pollRef.current[id];
+    }
+  }, []);
+
+  // Poll a single document every 3s until it reaches a terminal state.
+  const startPolling = useCallback(
+    (id: string) => {
+      if (pollRef.current[id]) return; // already polling
+      pollRef.current[id] = setInterval(async () => {
+        try {
+          const res = await fetch(`/api/documents/${id}`);
+          if (!res.ok) {
+            stopPolling(id);
+            return;
+          }
+          const { document } = await res.json();
+          setDocuments((prev) =>
+            prev.map((d) =>
+              d.id === id
+                ? { ...d, status: document.status, type: document.type }
+                : d
+            )
+          );
+          if (document.status === "READY" || document.status === "ERROR") {
+            stopPolling(id);
+          }
+        } catch {
+          stopPolling(id);
+        }
+      }, 3000);
+    },
+    [stopPolling]
+  );
+
   useEffect(() => {
     let active = true;
     (async () => {
       const res = await fetch("/api/documents");
       const data = await res.json();
-      if (active) setDocuments(data.documents || []);
+      if (!active) return;
+      const docs: Document[] = data.documents || [];
+      setDocuments(docs);
+      // Resume polling for anything still processing (e.g. after a reload).
+      docs.forEach((d) => {
+        if (d.status === "PROCESSING") startPolling(d.id);
+      });
     })();
     return () => {
       active = false;
+    };
+  }, [startPolling]);
+
+  // Clear every interval on unmount.
+  useEffect(() => {
+    const timers = pollRef.current;
+    return () => {
+      Object.values(timers).forEach(clearInterval);
     };
   }, []);
 
@@ -85,10 +138,16 @@ export default function DemoPage() {
   const handleAnalyze = async (e: React.MouseEvent, id: string) => {
     e.preventDefault();
     e.stopPropagation();
-    setAnalyzing(id);
-    await fetch(`/api/documents/${id}/process`, { method: "POST" });
-    await fetchDocuments();
-    setAnalyzing(null);
+    // Optimistically show processing, then poll until done.
+    setDocuments((prev) =>
+      prev.map((d) => (d.id === id ? { ...d, status: "PROCESSING" } : d))
+    );
+    try {
+      await fetch(`/api/documents/${id}/process`, { method: "POST" });
+    } catch {
+      // Polling will reconcile the real state.
+    }
+    startPolling(id);
   };
 
   const filtered = documents.filter((d) =>
@@ -226,16 +285,19 @@ export default function DemoPage() {
                   {(doc.status === "UPLOADED" || doc.status === "ERROR") && (
                     <button
                       onClick={(e) => handleAnalyze(e, doc.id)}
-                      disabled={analyzing === doc.id}
-                      className="mt-3 w-full flex items-center justify-center gap-2 text-xs border rounded-md py-1.5 hover:border-primary hover:text-primary transition disabled:opacity-50"
+                      className="mt-3 w-full flex items-center justify-center gap-2 text-xs border rounded-md py-1.5 hover:border-primary hover:text-primary transition"
                     >
-                      {analyzing === doc.id ? (
-                        <Loader2 className="w-3 h-3 animate-spin" />
-                      ) : (
-                        <Zap className="w-3 h-3" />
-                      )}
-                      {analyzing === doc.id ? "Analyzing..." : "Analyze"}
+                      <Zap className="w-3 h-3" />
+                      Analyze
                     </button>
+                  )}
+
+                  {/* Индикатор обработки во время polling */}
+                  {doc.status === "PROCESSING" && (
+                    <div className="mt-3 w-full flex items-center justify-center gap-2 text-xs text-muted-foreground py-1.5">
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                      Analyzing...
+                    </div>
                   )}
                 </div>
               ))}

@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import {
   FileText,
   ArrowLeft,
@@ -84,6 +84,7 @@ export default function DocumentViewerPage({
   const [document, setDocument] = useState<Document | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -111,6 +112,29 @@ export default function DocumentViewerPage({
       active = false;
     };
   }, [id]);
+
+  // While the document is processing, poll every 3s until it's READY or ERROR.
+  useEffect(() => {
+    if (document?.status !== "PROCESSING") return;
+
+    pollRef.current = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/documents/${id}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        setDocument(data.document);
+      } catch {
+        // transient error — keep polling
+      }
+    }, 3000);
+
+    return () => {
+      if (pollRef.current) {
+        clearInterval(pollRef.current);
+        pollRef.current = null;
+      }
+    };
+  }, [document?.status, id]);
 
   const fileUrl = document?.fileUrl ?? document?.blobUrl ?? null;
 
@@ -153,6 +177,14 @@ export default function DocumentViewerPage({
       {/* Content */}
       {!loading && !error && document && (
         <div className="flex flex-1 flex-col">
+          {/* Processing indicator */}
+          {document.status === "PROCESSING" && (
+            <div className="flex items-center justify-center gap-2 border-b bg-yellow-50 px-4 py-2.5 text-sm font-medium text-yellow-700 sm:px-6">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Analyzing document…
+            </div>
+          )}
+
           {/* Header */}
           <div className="flex flex-col gap-3 border-b px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
             <div className="flex min-w-0 items-center gap-3">
