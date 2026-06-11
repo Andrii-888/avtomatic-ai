@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { FileText, Upload, Search, Loader2 } from "lucide-react";
+import { FileText, Upload, Search, Loader2, X, Zap } from "lucide-react";
 import Link from "next/link";
 
 interface Document {
@@ -12,9 +12,17 @@ interface Document {
   createdAt: string;
 }
 
+const statusColor: Record<string, string> = {
+  READY: "bg-green-100 text-green-700",
+  PROCESSING: "bg-yellow-100 text-yellow-700",
+  ERROR: "bg-red-100 text-red-700",
+  UPLOADED: "bg-blue-100 text-blue-700",
+};
+
 export default function DemoPage() {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [analyzing, setAnalyzing] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -39,20 +47,31 @@ export default function DemoPage() {
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     setUploading(true);
     const formData = new FormData();
     formData.append("file", file);
-
     const res = await fetch("/api/documents/upload", {
       method: "POST",
       body: formData,
     });
-
-    if (res.ok) {
-      await fetchDocuments();
-    }
+    if (res.ok) await fetchDocuments();
     setUploading(false);
+  };
+
+  const handleDelete = async (e: React.MouseEvent, id: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    await fetch(`/api/documents/${id}`, { method: "DELETE" });
+    setDocuments((prev) => prev.filter((d) => d.id !== id));
+  };
+
+  const handleAnalyze = async (e: React.MouseEvent, id: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setAnalyzing(id);
+    await fetch(`/api/documents/${id}/process`, { method: "POST" });
+    await fetchDocuments();
+    setAnalyzing(null);
   };
 
   const filtered = documents.filter((d) =>
@@ -94,7 +113,7 @@ export default function DemoPage() {
               className="flex items-center gap-2 p-2 rounded-md hover:bg-muted cursor-pointer transition"
             >
               <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
-              <div className="overflow-hidden">
+              <div className="overflow-hidden flex-1">
                 <p className="text-sm truncate">{doc.title}</p>
                 <p className="text-xs text-muted-foreground">
                   {doc.type || doc.status}
@@ -103,7 +122,6 @@ export default function DemoPage() {
             </Link>
           ))}
 
-          {/* Upload button */}
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
@@ -127,7 +145,6 @@ export default function DemoPage() {
 
         {/* Main */}
         <main className="flex-1 p-8 flex flex-col gap-6">
-          {/* Search */}
           <div className="flex items-center gap-2 border rounded-md px-4 py-2 max-w-xl">
             <Search className="w-4 h-4 text-muted-foreground" />
             <input
@@ -138,7 +155,6 @@ export default function DemoPage() {
             />
           </div>
 
-          {/* Empty state */}
           {documents.length === 0 && (
             <div className="flex flex-col items-center justify-center flex-1 gap-4 text-center">
               <FileText className="w-12 h-12 text-muted-foreground" />
@@ -155,28 +171,58 @@ export default function DemoPage() {
             </div>
           )}
 
-          {/* Documents grid */}
           {documents.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl">
               {filtered.map((doc) => (
-                <Link
+                <div
                   key={doc.id}
-                  href={`/demo/doc/${doc.id}`}
-                  className="border rounded-xl p-4 hover:border-primary transition cursor-pointer"
+                  className="relative group border rounded-xl p-4 hover:border-primary transition"
                 >
-                  <div className="flex items-center gap-3 mb-3">
-                    <FileText className="w-5 h-5" />
-                    <p className="text-sm font-medium truncate">{doc.title}</p>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">
-                      {doc.type || "Document"}
-                    </span>
-                    <span className="text-xs bg-muted px-2 py-0.5 rounded-full">
-                      {doc.status}
-                    </span>
-                  </div>
-                </Link>
+                  {/* Крестик удаления */}
+                  <button
+                    onClick={(e) => handleDelete(e, doc.id)}
+                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition text-muted-foreground hover:text-red-500"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+
+                  <Link href={`/demo/doc/${doc.id}`} className="block">
+                    <div className="flex items-center gap-3 mb-3">
+                      <FileText className="w-5 h-5" />
+                      <p className="text-sm font-medium truncate pr-4">
+                        {doc.title}
+                      </p>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground">
+                        {doc.type || "Document"}
+                      </span>
+                      <span
+                        className={`text-xs px-2 py-0.5 rounded-full ${
+                          statusColor[doc.status] || "bg-muted"
+                        }`}
+                      >
+                        {doc.status}
+                      </span>
+                    </div>
+                  </Link>
+
+                  {/* Кнопка Analyze */}
+                  {(doc.status === "UPLOADED" || doc.status === "ERROR") && (
+                    <button
+                      onClick={(e) => handleAnalyze(e, doc.id)}
+                      disabled={analyzing === doc.id}
+                      className="mt-3 w-full flex items-center justify-center gap-2 text-xs border rounded-md py-1.5 hover:border-primary hover:text-primary transition disabled:opacity-50"
+                    >
+                      {analyzing === doc.id ? (
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                      ) : (
+                        <Zap className="w-3 h-3" />
+                      )}
+                      {analyzing === doc.id ? "Analyzing..." : "Analyze"}
+                    </button>
+                  )}
+                </div>
               ))}
             </div>
           )}
