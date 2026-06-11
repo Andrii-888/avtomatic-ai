@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@/generated/prisma";
 import { extractText } from "unpdf";
+import { getAIProvider } from "@/lib/ai";
 
 export class DocumentService {
   async extractText(documentId: string): Promise<string> {
@@ -28,6 +30,36 @@ export class DocumentService {
     return text;
   }
 
+  async analyzeWithAI(
+    documentId: string,
+    text: string,
+    filename: string
+  ): Promise<void> {
+    const ai = getAIProvider();
+
+    // Skip analysis when no provider is configured or there's too little text.
+    if (!ai || text.length < 50) {
+      console.log("[ANALYZE] Skipped", documentId, {
+        hasProvider: Boolean(ai),
+        textLength: text.length,
+      });
+      return;
+    }
+
+    const analysis = await ai.analyzeDocument({ text, filename });
+
+    await prisma.document.update({
+      where: { id: documentId },
+      data: { type: analysis.documentType, summary: analysis.summary },
+    });
+
+    // Persist structured fields (language, confidence, entities) in Extraction.
+    await prisma.extraction.deleteMany({ where: { documentId } });
+    await prisma.extraction.create({
+      data: { documentId, data: analysis as unknown as Prisma.InputJsonValue },
+    });
+  }
+
   async process(documentId: string): Promise<void> {
     await prisma.document.update({
       where: { id: documentId },
@@ -35,7 +67,14 @@ export class DocumentService {
     });
 
     try {
-      await this.extractText(documentId);
+      const text = await this.extractText(documentId);
+
+      const document = await prisma.document.findUnique({
+        where: { id: documentId },
+        select: { title: true },
+      });
+      await this.analyzeWithAI(documentId, text, document?.title ?? "");
+
       await prisma.document.update({
         where: { id: documentId },
         data: { status: "READY" },
