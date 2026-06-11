@@ -10,6 +10,9 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  // No monospace text in the UI yet — load on demand instead of preloading
+  // eagerly (avoids the "preloaded but not used" console warning).
+  preload: false,
 });
 
 export const metadata: Metadata = {
