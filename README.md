@@ -32,6 +32,9 @@ hosted demo never ships document text to an external provider.
 | **Sprint 2** | Document upload, listing, viewer, delete | ✅ Done |
 | **Sprint 3A** | PDF text extraction (unpdf, serverless PDF.js) | ✅ Done |
 | **Sprint 3B** | AI analysis layer (Ollama) + provider abstraction + UI | ✅ Done |
+| **Polish** | Landing redesign, shared UI, upload hardening, **signed URLs** | ✅ Done |
+
+See [`CHANGELOG.md`](./CHANGELOG.md) for the detailed history.
 
 ---
 
@@ -108,6 +111,16 @@ const DocumentAnalysisSchema = z.object({
 implementations selected via `STORAGE_PROVIDER`: `supabase` (default in use),
 `local`, and `r2` (Cloudflare R2).
 
+### Security & privacy
+
+- **Signed URLs** — files are read through short-lived signed URLs
+  (`StorageProvider.getSignedUrl`) instead of permanent public links. The
+  document API returns a fresh 1-hour URL; server-side extraction signs for 120s.
+- **Upload hardening** — PDF-only, 15 MB limit, and filenames sanitized into
+  path-safe storage keys (`buildStorageKey`).
+- For full privacy the Supabase bucket must be **private** and
+  `SUPABASE_SERVICE_ROLE_KEY` set (server-only) so signing works against it.
+
 ---
 
 ## Project Structure
@@ -175,6 +188,7 @@ DATABASE_URL="postgresql://..."
 STORAGE_PROVIDER="supabase"        # supabase | local | r2
 SUPABASE_URL="https://xxxx.supabase.co"
 SUPABASE_ANON_KEY="..."
+SUPABASE_SERVICE_ROLE_KEY="..."   # server-only; required for signed URLs on a private bucket
 SUPABASE_BUCKET="avtomatic-ai"
 
 # AI (local only — leave unset/none in the cloud)
