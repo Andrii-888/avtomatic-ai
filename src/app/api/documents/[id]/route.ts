@@ -11,6 +11,7 @@ export async function GET(
     const { id } = await ctx.params;
     const document = await prisma.document.findUnique({
       where: { id },
+      include: { extractions: true },
     });
     if (!document) {
       return NextResponse.json(
