@@ -216,6 +216,10 @@ OLLAMA_MODEL="llama3.2"
 
 ## Roadmap
 
+- ✅ **Auto status updates** — background processing + live polling (done).
+- **Authentication** — per-user documents (currently the demo is open).
+- **Private bucket** — flip Supabase to private + set `SUPABASE_SERVICE_ROLE_KEY`
+  to fully activate the signed-URL privacy already wired in code.
 - **Cloud AI providers** — `ClaudeProvider` / `OpenAIProvider` for clients who
   opt into hosted analysis.
 - **Chat over documents** — the `ChatMessage` model is already in the schema.

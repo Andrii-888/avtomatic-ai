@@ -6,6 +6,17 @@ Detailed log of work on Avtomatic.AI, grouped by working session.
 
 ## Session 2 — UI/UX polish, hardening & privacy
 
+### Background processing & live status (Auto Status Updates)
+- `POST /api/documents/[id]/process` now flips the document to `PROCESSING`
+  and returns `202` immediately, running the pipeline after the response via
+  Next.js `after()` (reliable on Vercel Fluid Compute) — no more blocking the
+  request for the full extract+analyze.
+- Demo list polls each analyzing document every 3s until `READY`/`ERROR`,
+  shows a spinner on the card, resumes polling for in-flight docs after a
+  reload, and clears all intervals on unmount (`useRef`-tracked).
+- Document viewer polls while `PROCESSING` and shows a top progress banner;
+  the AI analysis cards appear once it finishes.
+
 ### Landing page redesign
 - Rebuilt `src/app/page.tsx` as a full marketing page: hero, **"What we solve"**
   feature grid (12 cards across **Live / In Development / Roadmap** states),
