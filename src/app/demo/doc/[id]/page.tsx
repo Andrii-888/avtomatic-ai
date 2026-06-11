@@ -8,8 +8,23 @@ import {
   ExternalLink,
   Loader2,
   AlertCircle,
+  Sparkles,
 } from "lucide-react";
 import Link from "next/link";
+
+interface ExtractionData {
+  documentType: string;
+  language: string;
+  confidence: number;
+  summary: string;
+  entities: Record<string, unknown>;
+}
+
+interface Extraction {
+  id: string;
+  documentId: string;
+  data: ExtractionData;
+}
 
 interface Document {
   id: string;
@@ -20,6 +35,42 @@ interface Document {
   blobUrl: string | null;
   status: string;
   createdAt: string;
+  extractions?: Extraction[];
+}
+
+const LANGUAGE_NAMES: Record<string, string> = {
+  it: "Italian",
+  de: "German",
+  en: "English",
+  fr: "French",
+  ru: "Russian",
+  other: "Other",
+};
+
+function formatEntityValue(value: unknown) {
+  if (Array.isArray(value)) {
+    if (value.length === 0) {
+      return <span className="text-sm text-muted-foreground">—</span>;
+    }
+    return (
+      <div className="flex flex-wrap gap-1.5">
+        {value.map((v, i) => (
+          <span key={i} className="rounded-full bg-muted px-2 py-0.5 text-xs">
+            {typeof v === "object" ? JSON.stringify(v) : String(v)}
+          </span>
+        ))}
+      </div>
+    );
+  }
+  if (value === null || value === undefined || value === "") {
+    return <span className="text-sm text-muted-foreground">—</span>;
+  }
+  if (typeof value === "object") {
+    return (
+      <span className="text-sm wrap-break-words">{JSON.stringify(value)}</span>
+    );
+  }
+  return <span className="text-sm wrap-break-words">{String(value)}</span>;
 }
 
 export default function DocumentViewerPage({
@@ -41,7 +92,9 @@ export default function DocumentViewerPage({
         const res = await fetch(`/api/documents/${id}`);
         if (!res.ok) {
           throw new Error(
-            res.status === 404 ? "Document not found" : "Failed to load document"
+            res.status === 404
+              ? "Document not found"
+              : "Failed to load document"
           );
         }
         const data = await res.json();
@@ -179,6 +232,82 @@ export default function DocumentViewerPage({
               <p className="text-sm leading-relaxed text-muted-foreground">
                 {document.summary}
               </p>
+            </div>
+          )}
+
+          {/* AI Analysis (if present) */}
+          {document.extractions && document.extractions.length > 0 && (
+            <div className="border-t px-4 py-4 sm:px-6">
+              <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold">
+                <Sparkles className="h-4 w-4 text-primary" />
+                AI Analysis
+              </h2>
+
+              {(() => {
+                const data = document.extractions[0].data;
+                const confidencePct = Math.round((data.confidence ?? 0) * 100);
+
+                return (
+                  <div className="flex flex-col gap-4">
+                    {/* Meta cards */}
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                      <div className="rounded-xl border p-4">
+                        <p className="text-xs text-muted-foreground">
+                          Document type
+                        </p>
+                        <p className="mt-1 text-sm font-medium capitalize">
+                          {data.documentType}
+                        </p>
+                      </div>
+
+                      <div className="rounded-xl border p-4">
+                        <p className="text-xs text-muted-foreground">
+                          Language
+                        </p>
+                        <p className="mt-1 text-sm font-medium">
+                          {LANGUAGE_NAMES[data.language] || data.language}
+                        </p>
+                      </div>
+
+                      <div className="rounded-xl border p-4">
+                        <p className="text-xs text-muted-foreground">
+                          Confidence
+                        </p>
+                        <p className="mt-1 text-sm font-medium">
+                          {confidencePct}%
+                        </p>
+                        <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                          <div
+                            className="h-full rounded-full bg-primary transition-all"
+                            style={{ width: `${confidencePct}%` }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Entities */}
+                    {data.entities && Object.keys(data.entities).length > 0 && (
+                      <div className="rounded-xl border p-4">
+                        <p className="mb-3 text-xs font-medium text-muted-foreground">
+                          Extracted entities
+                        </p>
+                        <dl className="grid gap-4 sm:grid-cols-2">
+                          {Object.entries(data.entities).map(([key, value]) => (
+                            <div key={key} className="min-w-0">
+                              <dt className="text-xs capitalize text-muted-foreground">
+                                {key}
+                              </dt>
+                              <dd className="mt-1">
+                                {formatEntityValue(value)}
+                              </dd>
+                            </div>
+                          ))}
+                        </dl>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
           )}
         </div>
