@@ -45,4 +45,9 @@ export class LocalStorageProvider implements StorageProvider {
   async getUrl(key: string): Promise<string> {
     return `${this.baseUrl}/${key}`;
   }
+
+  async getSignedUrl(key: string): Promise<string> {
+    // Local dev files are served statically from /public — no signing needed.
+    return `${this.baseUrl}/${key}`;
+  }
 }

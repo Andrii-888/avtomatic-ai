@@ -19,7 +19,20 @@ export async function GET(
         { status: 404 }
       );
     }
-    return NextResponse.json({ document });
+
+    // Hand the client a short-lived signed URL instead of a permanent public
+    // link, so confidential files stay private behind the storage layer.
+    let fileUrl: string | null = document.blobUrl;
+    if (document.storageKey) {
+      try {
+        const storage = await getStorageProvider();
+        fileUrl = await storage.getSignedUrl(document.storageKey, 3600);
+      } catch (e) {
+        console.error("Signed URL error:", e);
+      }
+    }
+
+    return NextResponse.json({ document: { ...document, fileUrl } });
   } catch (error) {
     console.error("Error fetching document:", error);
     return NextResponse.json(

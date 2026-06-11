@@ -34,6 +34,7 @@ interface Document {
   summary: string | null;
   content: string | null;
   blobUrl: string | null;
+  fileUrl?: string | null;
   status: string;
   createdAt: string;
   extractions?: Extraction[];
@@ -111,6 +112,8 @@ export default function DocumentViewerPage({
     };
   }, [id]);
 
+  const fileUrl = document?.fileUrl ?? document?.blobUrl ?? null;
+
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
       {/* Nav */}
@@ -167,10 +170,10 @@ export default function DocumentViewerPage({
               </div>
             </div>
 
-            {document.blobUrl && (
+            {fileUrl && (
               <div className="flex shrink-0 items-center gap-2">
                 <a
-                  href={document.blobUrl}
+                  href={fileUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex flex-1 items-center justify-center gap-2 rounded-md border px-3 py-2 text-sm transition hover:bg-muted sm:flex-none"
@@ -179,7 +182,7 @@ export default function DocumentViewerPage({
                   <span className="hidden sm:inline">Open</span>
                 </a>
                 <a
-                  href={document.blobUrl}
+                  href={fileUrl}
                   download={document.title}
                   className="flex flex-1 items-center justify-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90 sm:flex-none"
                 >
@@ -192,9 +195,9 @@ export default function DocumentViewerPage({
 
           {/* PDF viewer */}
           <div className="flex-1 p-4 sm:p-6">
-            {document.blobUrl ? (
+            {fileUrl ? (
               <object
-                data={document.blobUrl}
+                data={fileUrl}
                 type="application/pdf"
                 className="h-[60vh] w-full rounded-lg border bg-muted/30 sm:h-[75vh] lg:h-[80vh]"
               >
@@ -205,7 +208,7 @@ export default function DocumentViewerPage({
                     Preview isn&apos;t available on this device.
                   </p>
                   <a
-                    href={document.blobUrl}
+                    href={fileUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"

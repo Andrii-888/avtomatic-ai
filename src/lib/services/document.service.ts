@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { Prisma } from "@/generated/prisma";
 import { extractText } from "unpdf";
 import { getAIProvider } from "@/lib/ai";
+import { getStorageProvider } from "@/lib/storage";
 
 export class DocumentService {
   async extractText(documentId: string): Promise<string> {
@@ -10,9 +11,17 @@ export class DocumentService {
     });
 
     if (!document) throw new Error("Document not found");
-    if (!document.blobUrl) throw new Error("No file URL");
 
-    const response = await fetch(document.blobUrl);
+    // Read the file through a short-lived signed URL (works with private
+    // buckets); fall back to a stored URL for legacy records.
+    let fileUrl = document.blobUrl;
+    if (document.storageKey) {
+      const storage = await getStorageProvider();
+      fileUrl = await storage.getSignedUrl(document.storageKey, 120);
+    }
+    if (!fileUrl) throw new Error("No file URL");
+
+    const response = await fetch(fileUrl);
     if (!response.ok) throw new Error(`Failed to fetch file: ${response.status}`);
 
     const arrayBuffer = await response.arrayBuffer();

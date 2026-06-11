@@ -66,4 +66,9 @@ export class R2StorageProvider implements StorageProvider {
   async getUrl(key: string): Promise<string> {
     return `${this.publicUrl}/${key}`;
   }
+
+  async getSignedUrl(key: string): Promise<string> {
+    // R2 is configured with a public base URL (public bucket / CDN).
+    return `${this.publicUrl}/${key}`;
+  }
 }
