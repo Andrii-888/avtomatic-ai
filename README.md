@@ -34,6 +34,7 @@ hosted demo never ships document text to an external provider.
 | **Sprint 3B** | AI analysis layer (Ollama) + provider abstraction + UI | ✅ Done |
 | **Polish** | Landing redesign, shared UI, upload hardening, **signed URLs** | ✅ Done |
 | **i18n** | 5-language UI (EN/IT/DE/FR/RU) with a language switcher | ✅ Done |
+| **Sprint 4** | Chat with Document (Ollama Q&A over `content`, history) | ✅ Done |
 
 See [`CHANGELOG.md`](./CHANGELOG.md) for the detailed history.
 
@@ -238,10 +239,10 @@ OLLAMA_MODEL="llama3.2"
 - ✅ **Auto status updates** — background processing + live polling (done).
 - ✅ **Private storage** — private Supabase bucket + signed URLs (done).
 - ✅ **Access gate** — shared-password site protection via `proxy.ts` (done).
+- ✅ **Chat over documents** — local Ollama Q&A over the extracted content (done).
 - **Authentication** — per-user accounts and documents (the gate is shared).
 - **Cloud AI providers** — `ClaudeProvider` / `OpenAIProvider` for clients who
-  opt into hosted analysis.
-- **Chat over documents** — the `ChatMessage` model is already in the schema.
+  opt into hosted analysis (would also enable chat in the cloud).
 - **More document types & richer entity extraction.**
 
 ---

@@ -9,6 +9,8 @@ import {
   Loader2,
   AlertCircle,
   Sparkles,
+  MessageCircle,
+  Send,
 } from "lucide-react";
 import Link from "next/link";
 import { Logo } from "@/components/logo";
@@ -40,6 +42,13 @@ interface Document {
   status: string;
   createdAt: string;
   extractions?: Extraction[];
+}
+
+interface ChatMessage {
+  id: string;
+  role: string;
+  content: string;
+  createdAt?: string;
 }
 
 function formatEntityValue(value: unknown) {
@@ -79,6 +88,11 @@ export default function DocumentViewerPage({
   const [loading, setLoading] = useState(true);
   const [errorKey, setErrorKey] = useState<string | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [chatInput, setChatInput] = useState("");
+  const [sending, setSending] = useState(false);
+  const messagesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let active = true;
@@ -128,6 +142,65 @@ export default function DocumentViewerPage({
       }
     };
   }, [document?.status, id]);
+
+  // Load chat history.
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      const res = await fetch(`/api/documents/${id}/chat`);
+      if (!res.ok) return;
+      const data = await res.json();
+      if (active) setMessages(data.messages || []);
+    })();
+    return () => {
+      active = false;
+    };
+  }, [id]);
+
+  // Autoscroll the chat to the bottom on new messages / while sending.
+  useEffect(() => {
+    const el = messagesRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [messages, sending]);
+
+  const handleSend = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const text = chatInput.trim();
+    if (!text || sending) return;
+
+    setChatInput("");
+    setMessages((prev) => [
+      ...prev,
+      { id: `tmp-${prev.length}-${text.length}`, role: "user", content: text },
+    ]);
+    setSending(true);
+
+    try {
+      const res = await fetch(`/api/documents/${id}/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text }),
+      });
+      const data = await res.json().catch(() => ({}));
+      const reply =
+        res.ok && data.message
+          ? data.message
+          : {
+              id: `err-${Date.now()}`,
+              role: "assistant",
+              content:
+                res.status === 503 ? t("chat.unavailable") : t("chat.error"),
+            };
+      setMessages((prev) => [...prev, reply]);
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        { id: `err-${Date.now()}`, role: "assistant", content: t("chat.error") },
+      ]);
+    } finally {
+      setSending(false);
+    }
+  };
 
   const fileUrl = document?.fileUrl ?? document?.blobUrl ?? null;
 
@@ -338,6 +411,78 @@ export default function DocumentViewerPage({
                   </div>
                 );
               })()}
+            </div>
+          )}
+
+          {/* Chat with Document */}
+          {document.content && (
+            <div className="border-t px-4 py-4 sm:px-6">
+              <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold">
+                <MessageCircle className="h-4 w-4 text-primary" />
+                {t("chat.title")}
+              </h2>
+
+              <div className="flex flex-col gap-3">
+                <div
+                  ref={messagesRef}
+                  className="flex max-h-80 flex-col gap-3 overflow-y-auto rounded-xl border bg-card p-4"
+                >
+                  {messages.length === 0 && !sending && (
+                    <p className="py-6 text-center text-sm text-muted-foreground">
+                      {t("chat.empty")}
+                    </p>
+                  )}
+
+                  {messages.map((m) => (
+                    <div
+                      key={m.id}
+                      className={`flex ${
+                        m.role === "user" ? "justify-end" : "justify-start"
+                      }`}
+                    >
+                      <div
+                        className={`max-w-[80%] whitespace-pre-wrap rounded-2xl px-3.5 py-2 text-sm ${
+                          m.role === "user"
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted text-foreground"
+                        }`}
+                      >
+                        {m.content}
+                      </div>
+                    </div>
+                  ))}
+
+                  {sending && (
+                    <div className="flex justify-start">
+                      <div className="rounded-2xl bg-muted px-3.5 py-2.5">
+                        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <form onSubmit={handleSend} className="flex items-center gap-2">
+                  <input
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    placeholder={t("chat.placeholder")}
+                    disabled={sending}
+                    className="flex-1 rounded-lg border bg-card px-4 py-2.5 text-sm outline-none transition focus:border-primary disabled:opacity-50"
+                  />
+                  <button
+                    type="submit"
+                    disabled={sending || !chatInput.trim()}
+                    className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:opacity-50"
+                  >
+                    {sending ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Send className="h-4 w-4" />
+                    )}
+                    <span className="hidden sm:inline">{t("chat.send")}</span>
+                  </button>
+                </form>
+              </div>
             </div>
           )}
         </div>

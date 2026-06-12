@@ -139,6 +139,14 @@ export const en = {
   "docLang.ru": "Russian",
   "docLang.other": "Other",
 
+  // chat with document
+  "chat.title": "Chat with Document",
+  "chat.placeholder": "Ask a question about this document…",
+  "chat.send": "Send",
+  "chat.empty": "Ask anything about this document.",
+  "chat.error": "Couldn't get an answer.",
+  "chat.unavailable": "AI chat is not available in this environment.",
+
   // language switcher
   "lang.label": "Language",
 } as const;

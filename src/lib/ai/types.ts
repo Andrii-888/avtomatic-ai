@@ -15,4 +15,6 @@ export interface AIProvider {
     text: string;
     filename: string;
   }): Promise<DocumentAnalysis>;
+
+  chat(input: { content: string; message: string }): Promise<string>;
 }

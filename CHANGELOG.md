@@ -6,6 +6,17 @@ Detailed log of work on Avtomatic.AI, grouped by working session.
 
 ## Session 2 — UI/UX polish, hardening & privacy
 
+### Sprint 4 — Chat with Document
+- Added a `chat()` method to `AIProvider` / `OllamaProvider` (free-text Q&A over
+  the document content, capped at 6k chars).
+- `POST /api/documents/[id]/chat` saves the user + assistant `ChatMessage`,
+  answers via Ollama, and returns `503 "AI not available"` when no provider is
+  configured (the Vercel default). `GET` returns the message history.
+- Document viewer gained a chat section below AI Analysis: user/assistant
+  bubbles (right/left, distinct colors), input + Send, a loader while answering,
+  autoscroll, and graceful "AI unavailable" handling.
+- Localized into all 5 languages. Verified locally end-to-end against Ollama.
+
 ### Password gate (site-wide access protection)
 - Added `src/proxy.ts` — Next 16's renamed `middleware` convention — that gates
   the whole site behind a shared password. Unauthenticated requests redirect to

@@ -135,5 +135,12 @@ export const ru: Record<MessageKey, string> = {
   "docLang.ru": "Русский",
   "docLang.other": "Другой",
 
+  "chat.title": "Чат с документом",
+  "chat.placeholder": "Задайте вопрос по этому документу…",
+  "chat.send": "Отправить",
+  "chat.empty": "Спросите что угодно об этом документе.",
+  "chat.error": "Не удалось получить ответ.",
+  "chat.unavailable": "ИИ-чат недоступен в этом окружении.",
+
   "lang.label": "Язык",
 };

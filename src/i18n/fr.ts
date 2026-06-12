@@ -136,5 +136,12 @@ export const fr: Record<MessageKey, string> = {
   "docLang.ru": "Russe",
   "docLang.other": "Autre",
 
+  "chat.title": "Discuter avec le document",
+  "chat.placeholder": "Posez une question sur ce document…",
+  "chat.send": "Envoyer",
+  "chat.empty": "Posez n'importe quelle question sur ce document.",
+  "chat.error": "Impossible d'obtenir une réponse.",
+  "chat.unavailable": "Le chat IA n'est pas disponible dans cet environnement.",
+
   "lang.label": "Langue",
 };

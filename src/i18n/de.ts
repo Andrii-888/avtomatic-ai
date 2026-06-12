@@ -136,5 +136,12 @@ export const de: Record<MessageKey, string> = {
   "docLang.ru": "Russisch",
   "docLang.other": "Andere",
 
+  "chat.title": "Mit dem Dokument chatten",
+  "chat.placeholder": "Stelle eine Frage zu diesem Dokument…",
+  "chat.send": "Senden",
+  "chat.empty": "Frage alles über dieses Dokument.",
+  "chat.error": "Es konnte keine Antwort abgerufen werden.",
+  "chat.unavailable": "Der KI-Chat ist in dieser Umgebung nicht verfügbar.",
+
   "lang.label": "Sprache",
 };

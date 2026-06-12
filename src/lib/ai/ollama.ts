@@ -51,4 +51,27 @@ Return this exact JSON structure:
     console.log("[OLLAMA] Result:", result);
     return result;
   }
+
+  async chat(input: { content: string; message: string }): Promise<string> {
+    const prompt = `You are a helpful assistant answering questions about this document. Document content: ${input.content.slice(
+      0,
+      6000
+    )}. Question: ${input.message}. Answer concisely based only on the document content.`;
+
+    const response = await fetch(`${OLLAMA_BASE_URL}/api/generate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: OLLAMA_MODEL,
+        prompt,
+        stream: false,
+      }),
+      signal: AbortSignal.timeout(120000),
+    });
+
+    if (!response.ok) throw new Error(`Ollama error: ${response.status}`);
+
+    const data = await response.json();
+    return String(data.response ?? "").trim();
+  }
 }
