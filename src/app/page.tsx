@@ -90,14 +90,14 @@ const features: { status: Status; title: string; desc: string }[] = [
     desc: "Get the key points without reading the full document.",
   },
   {
-    status: "coming",
-    title: "Chat with Document",
-    desc: "Ask questions about any document in natural language.",
+    status: "ready",
+    title: "Auto Status Updates",
+    desc: "Real-time processing status without page refresh.",
   },
   {
     status: "coming",
-    title: "Auto Status Updates",
-    desc: "Real-time processing status without page refresh.",
+    title: "Chat with Document",
+    desc: "Ask questions about any document in natural language.",
   },
   {
     status: "coming",
