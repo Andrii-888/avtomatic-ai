@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Logo } from "@/components/logo";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { useI18n } from "@/i18n/provider";
 
 interface ExtractionData {
   documentType: string;
@@ -39,15 +41,6 @@ interface Document {
   createdAt: string;
   extractions?: Extraction[];
 }
-
-const LANGUAGE_NAMES: Record<string, string> = {
-  it: "Italian",
-  de: "German",
-  en: "English",
-  fr: "French",
-  ru: "Russian",
-  other: "Other",
-};
 
 function formatEntityValue(value: unknown) {
   if (Array.isArray(value)) {
@@ -80,30 +73,30 @@ export default function DocumentViewerPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const { t } = useI18n();
   const { id } = use(params);
   const [document, setDocument] = useState<Document | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [errorKey, setErrorKey] = useState<string | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     let active = true;
     (async () => {
       setLoading(true);
-      setError(null);
+      setErrorKey(null);
       try {
         const res = await fetch(`/api/documents/${id}`);
         if (!res.ok) {
-          throw new Error(
-            res.status === 404
-              ? "Document not found"
-              : "Failed to load document"
-          );
+          if (active) {
+            setErrorKey(res.status === 404 ? "doc.notFound" : "doc.loadFailed");
+          }
+          return;
         }
         const data = await res.json();
         if (active) setDocument(data.document);
-      } catch (e) {
-        if (active) setError(e instanceof Error ? e.message : "Unknown error");
+      } catch {
+        if (active) setErrorKey("doc.loadFailed");
       } finally {
         if (active) setLoading(false);
       }
@@ -143,14 +136,17 @@ export default function DocumentViewerPage({
       {/* Nav */}
       <nav className="flex items-center justify-between gap-3 border-b px-6 sm:px-10 h-16">
         <Logo />
-        <Link
-          href="/demo"
-          className="flex items-center gap-2 text-sm text-muted-foreground transition hover:text-foreground"
-        >
-          <ArrowLeft className="h-4 w-4 shrink-0" />
-          <span className="hidden sm:inline">Back to documents</span>
-          <span className="sm:hidden">Back</span>
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/demo"
+            className="flex items-center gap-2 text-sm text-muted-foreground transition hover:text-foreground"
+          >
+            <ArrowLeft className="h-4 w-4 shrink-0" />
+            <span className="hidden sm:inline">{t("doc.back")}</span>
+            <span className="sm:hidden">{t("doc.backShort")}</span>
+          </Link>
+          <LanguageSwitcher />
+        </div>
       </nav>
 
       {/* Loading */}
@@ -161,27 +157,27 @@ export default function DocumentViewerPage({
       )}
 
       {/* Error */}
-      {!loading && error && (
+      {!loading && errorKey && (
         <div className="flex flex-1 flex-col items-center justify-center gap-4 p-6 text-center">
           <AlertCircle className="h-12 w-12 text-destructive" />
-          <h2 className="text-lg font-semibold sm:text-xl">{error}</h2>
+          <h2 className="text-lg font-semibold sm:text-xl">{t(errorKey)}</h2>
           <Link
             href="/demo"
             className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
           >
-            Back to documents
+            {t("doc.back")}
           </Link>
         </div>
       )}
 
       {/* Content */}
-      {!loading && !error && document && (
+      {!loading && !errorKey && document && (
         <div className="flex flex-1 flex-col">
           {/* Processing indicator */}
           {document.status === "PROCESSING" && (
             <div className="flex items-center justify-center gap-2 border-b bg-yellow-50 px-4 py-2.5 text-sm font-medium text-yellow-700 sm:px-6">
               <Loader2 className="h-4 w-4 animate-spin" />
-              Analyzing document…
+              {t("doc.analyzingDocument")}
             </div>
           )}
 
@@ -194,9 +190,9 @@ export default function DocumentViewerPage({
                   {document.title}
                 </h1>
                 <p className="text-xs text-muted-foreground">
-                  {document.type || "Document"} ·{" "}
+                  {document.type || t("status.document")} ·{" "}
                   <span className="rounded-full bg-muted px-2 py-0.5">
-                    {document.status}
+                    {t(`status.${document.status}`)}
                   </span>
                 </p>
               </div>
@@ -211,7 +207,7 @@ export default function DocumentViewerPage({
                   className="flex flex-1 items-center justify-center gap-2 rounded-md border px-3 py-2 text-sm transition hover:bg-muted sm:flex-none"
                 >
                   <ExternalLink className="h-4 w-4" />
-                  <span className="hidden sm:inline">Open</span>
+                  <span className="hidden sm:inline">{t("doc.open")}</span>
                 </a>
                 <a
                   href={fileUrl}
@@ -219,7 +215,7 @@ export default function DocumentViewerPage({
                   className="flex flex-1 items-center justify-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90 sm:flex-none"
                 >
                   <Download className="h-4 w-4" />
-                  <span className="hidden sm:inline">Download</span>
+                  <span className="hidden sm:inline">{t("doc.download")}</span>
                 </a>
               </div>
             )}
@@ -237,7 +233,7 @@ export default function DocumentViewerPage({
                 <div className="flex h-full flex-col items-center justify-center gap-4 p-6 text-center">
                   <FileText className="h-12 w-12 text-muted-foreground" />
                   <p className="text-sm text-muted-foreground">
-                    Preview isn&apos;t available on this device.
+                    {t("doc.previewUnavailable")}
                   </p>
                   <a
                     href={fileUrl}
@@ -245,7 +241,7 @@ export default function DocumentViewerPage({
                     rel="noopener noreferrer"
                     className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
                   >
-                    Open PDF
+                    {t("doc.openPdf")}
                   </a>
                 </div>
               </object>
@@ -253,7 +249,7 @@ export default function DocumentViewerPage({
               <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-12 text-center">
                 <AlertCircle className="h-10 w-10 text-muted-foreground" />
                 <p className="text-sm text-muted-foreground">
-                  No file attached to this document.
+                  {t("doc.noFile")}
                 </p>
               </div>
             )}
@@ -262,7 +258,7 @@ export default function DocumentViewerPage({
           {/* Summary (if present) */}
           {document.summary && (
             <div className="border-t px-4 py-4 sm:px-6">
-              <h2 className="mb-2 text-sm font-semibold">Summary</h2>
+              <h2 className="mb-2 text-sm font-semibold">{t("doc.summary")}</h2>
               <p className="text-sm leading-relaxed text-muted-foreground">
                 {document.summary}
               </p>
@@ -274,7 +270,7 @@ export default function DocumentViewerPage({
             <div className="border-t px-4 py-4 sm:px-6">
               <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold">
                 <Sparkles className="h-4 w-4 text-primary" />
-                AI Analysis
+                {t("doc.aiAnalysis")}
               </h2>
 
               {(() => {
@@ -287,7 +283,7 @@ export default function DocumentViewerPage({
                     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                       <div className="rounded-xl border p-4">
                         <p className="text-xs text-muted-foreground">
-                          Document type
+                          {t("doc.documentType")}
                         </p>
                         <p className="mt-1 text-sm font-medium capitalize">
                           {data.documentType}
@@ -296,16 +292,16 @@ export default function DocumentViewerPage({
 
                       <div className="rounded-xl border p-4">
                         <p className="text-xs text-muted-foreground">
-                          Language
+                          {t("doc.language")}
                         </p>
                         <p className="mt-1 text-sm font-medium">
-                          {LANGUAGE_NAMES[data.language] || data.language}
+                          {t(`docLang.${data.language}`)}
                         </p>
                       </div>
 
                       <div className="rounded-xl border p-4">
                         <p className="text-xs text-muted-foreground">
-                          Confidence
+                          {t("doc.confidence")}
                         </p>
                         <p className="mt-1 text-sm font-medium">
                           {confidencePct}%
@@ -323,7 +319,7 @@ export default function DocumentViewerPage({
                     {data.entities && Object.keys(data.entities).length > 0 && (
                       <div className="rounded-xl border p-4">
                         <p className="mb-3 text-xs font-medium text-muted-foreground">
-                          Extracted entities
+                          {t("doc.extractedEntities")}
                         </p>
                         <dl className="grid gap-4 sm:grid-cols-2">
                           {Object.entries(data.entities).map(([key, value]) => (

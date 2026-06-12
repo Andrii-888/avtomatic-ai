@@ -33,6 +33,7 @@ hosted demo never ships document text to an external provider.
 | **Sprint 3A** | PDF text extraction (unpdf, serverless PDF.js) | ✅ Done |
 | **Sprint 3B** | AI analysis layer (Ollama) + provider abstraction + UI | ✅ Done |
 | **Polish** | Landing redesign, shared UI, upload hardening, **signed URLs** | ✅ Done |
+| **i18n** | 5-language UI (EN/IT/DE/FR/RU) with a language switcher | ✅ Done |
 
 See [`CHANGELOG.md`](./CHANGELOG.md) for the detailed history.
 
@@ -50,6 +51,7 @@ See [`CHANGELOG.md`](./CHANGELOG.md) for the detailed history.
 | PDF extraction | **unpdf** (serverless build of PDF.js — no DOMMatrix workarounds) |
 | AI | **Ollama** (`llama3.2`) locally, with a `none` fallback on Vercel |
 | Validation | **Zod** |
+| i18n | Custom typed dictionaries (EN/IT/DE/FR/RU) |
 | Runtime | **Node.js 22** |
 | Hosting | **Vercel** |
 
@@ -120,6 +122,15 @@ implementations selected via `STORAGE_PROVIDER`: `supabase` (default in use),
   path-safe storage keys (`buildStorageKey`).
 - For full privacy the Supabase bucket must be **private** and
   `SUPABASE_SERVICE_ROLE_KEY` set (server-only) so signing works against it.
+
+### Internationalization (i18n)
+
+The UI ships in **5 languages** — English, Italian, German, French, Russian —
+switchable instantly via the language picker in the nav (choice persisted in
+`localStorage`). `src/i18n/` holds one dictionary per locale; `en.ts` is the
+source of truth and every other locale is typed as `Record<MessageKey, string>`,
+so **TypeScript fails the build if any translation key is missing** — keeping all
+languages structurally in sync. A client `I18nProvider` exposes `t(key)`.
 
 ---
 

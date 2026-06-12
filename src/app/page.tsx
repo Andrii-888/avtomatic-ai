@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   CheckCircle2,
@@ -14,6 +16,8 @@ import {
   Lock,
 } from "lucide-react";
 import { Logo } from "@/components/logo";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { useI18n } from "@/i18n/provider";
 
 const GITHUB_URL = "https://github.com/Andrii-888/avtomatic-ai";
 
@@ -37,7 +41,7 @@ const STATUS: Record<
   {
     icon: typeof CheckCircle2;
     iconClass: string;
-    badge: string;
+    badgeKey: string;
     badgeClass: string;
     href?: string;
   }
@@ -45,159 +49,92 @@ const STATUS: Record<
   ready: {
     icon: CheckCircle2,
     iconClass: "text-green-600",
-    badge: "Live",
+    badgeKey: "badge.live",
     badgeClass: "bg-green-100 text-green-700",
     href: "/demo",
   },
   coming: {
     icon: Clock,
     iconClass: "text-amber-500",
-    badge: "In Development",
+    badgeKey: "badge.inDevelopment",
     badgeClass: "bg-amber-100 text-amber-700",
   },
   roadmap: {
     icon: Circle,
     iconClass: "text-muted-foreground",
-    badge: "Roadmap",
+    badgeKey: "badge.roadmap",
     badgeClass: "bg-muted text-muted-foreground",
   },
 };
 
-const features: { status: Status; title: string; desc: string }[] = [
-  {
-    status: "ready",
-    title: "PDF to Structured Data",
-    desc: "Extract text from any PDF automatically.",
-  },
-  {
-    status: "ready",
-    title: "AI Document Classification",
-    desc: "Detect invoice, contract, CV, certificate.",
-  },
-  {
-    status: "ready",
-    title: "Key Data Extraction",
-    desc: "Pull amounts, dates, parties, names automatically.",
-  },
-  {
-    status: "ready",
-    title: "Local AI Privacy",
-    desc: "Data never leaves your infrastructure. Ollama runs on-premise.",
-  },
-  {
-    status: "ready",
-    title: "Document Summary",
-    desc: "Get the key points without reading the full document.",
-  },
-  {
-    status: "ready",
-    title: "Auto Status Updates",
-    desc: "Real-time processing status without page refresh.",
-  },
-  {
-    status: "coming",
-    title: "Chat with Document",
-    desc: "Ask questions about any document in natural language.",
-  },
-  {
-    status: "coming",
-    title: "Document Search",
-    desc: "Find any document by its content instantly.",
-  },
-  {
-    status: "coming",
-    title: "Cloud AI Providers",
-    desc: "Optional Claude or OpenAI for clients who prefer cloud.",
-  },
-  {
-    status: "coming",
-    title: "Export to Excel / CSV",
-    desc: "Download extracted data as ready-to-use spreadsheets.",
-  },
-  {
-    status: "roadmap",
-    title: "OCR for Scanned Documents",
-    desc: "Process scanned PDFs and images.",
-  },
-  {
-    status: "roadmap",
-    title: "ERP/CRM Integration",
-    desc: "Export structured data directly to your business tools.",
-  },
+const features: { status: Status; key: string }[] = [
+  { status: "ready", key: "features.pdf" },
+  { status: "ready", key: "features.classify" },
+  { status: "ready", key: "features.extract" },
+  { status: "ready", key: "features.privacy" },
+  { status: "ready", key: "features.summary" },
+  { status: "ready", key: "features.status" },
+  { status: "coming", key: "features.chat" },
+  { status: "coming", key: "features.search" },
+  { status: "coming", key: "features.cloud" },
+  { status: "coming", key: "features.export" },
+  { status: "roadmap", key: "features.ocr" },
+  { status: "roadmap", key: "features.erp" },
 ];
 
 const steps = [
-  {
-    icon: Upload,
-    title: "Upload PDF",
-    desc: "Drag and drop any business document.",
-  },
-  {
-    icon: Cpu,
-    title: "AI Analyzes Locally",
-    desc: "Local LLM extracts and classifies data on your server.",
-  },
-  {
-    icon: Braces,
-    title: "Get Structured Data",
-    desc: "Use extracted data in your workflows.",
-  },
+  { icon: Upload, key: "steps.upload" },
+  { icon: Cpu, key: "steps.analyze" },
+  { icon: Braces, key: "steps.structured" },
 ];
 
 const audience = [
-  {
-    icon: Calculator,
-    title: "Fiduciaries",
-    desc: "Automate invoice and contract processing.",
-  },
-  {
-    icon: Scale,
-    title: "Law Firms",
-    desc: "Extract key terms from contracts instantly.",
-  },
-  {
-    icon: Users,
-    title: "HR Teams",
-    desc: "Parse CVs and extract candidate data automatically.",
-  },
+  { icon: Calculator, key: "audience.fiduciaries" },
+  { icon: Scale, key: "audience.law" },
+  { icon: Users, key: "audience.hr" },
 ];
 
 export default function Home() {
+  const { t } = useI18n();
+
   return (
     <main className="flex min-h-screen flex-col bg-background text-foreground">
       {/* NAV */}
       <nav className="sticky top-0 z-20 flex h-16 items-center justify-between border-b bg-background/80 px-6 backdrop-blur sm:px-10">
         <Logo />
-        <Link
-          href="/demo"
-          className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
-        >
-          Open Demo
-          <ArrowRight className="h-3.5 w-3.5" />
-        </Link>
+        <div className="flex items-center gap-2 sm:gap-3">
+          <LanguageSwitcher />
+          <Link
+            href="/demo"
+            className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
+          >
+            {t("common.openDemo")}
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
       </nav>
 
       {/* HERO */}
       <section className="mx-auto w-full max-w-3xl px-6 py-20 text-center sm:py-28">
         <h1 className="font-display text-4xl font-medium leading-[1.08] tracking-tight text-balance sm:text-6xl">
-          Document Intelligence for Business
+          {t("hero.title")}
         </h1>
         <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
-          From PDF to structured data — locally, without sending data anywhere.
+          {t("hero.subtitle")}
         </p>
         <div className="mt-9 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
           <Link
             href="/demo"
             className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
           >
-            Try Demo
+            {t("common.tryDemo")}
             <ArrowRight className="h-4 w-4" />
           </Link>
           <a
             href="#how"
             className="inline-flex items-center justify-center rounded-full border px-7 py-3.5 text-sm font-semibold transition hover:border-primary"
           >
-            How it works
+            {t("common.howItWorks")}
           </a>
         </div>
       </section>
@@ -207,16 +144,20 @@ export default function Home() {
         <div className="mx-auto max-w-6xl px-6 py-20 sm:px-10 sm:py-24">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="font-display text-3xl font-medium tracking-tight sm:text-4xl">
-              What we solve
+              {t("solve.title")}
             </h2>
             <p className="mt-3 text-lg text-muted-foreground">
-              From manual work to full automation.
+              {t("solve.subtitle")}
             </p>
           </div>
 
           <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {features.map((feature) => (
-              <FeatureCard key={feature.title} {...feature} />
+              <FeatureCard
+                key={feature.key}
+                status={feature.status}
+                featureKey={feature.key}
+              />
             ))}
           </div>
         </div>
@@ -226,21 +167,23 @@ export default function Home() {
       <section id="how" className="border-t bg-card/40 scroll-mt-16">
         <div className="mx-auto max-w-6xl px-6 py-20 sm:px-10 sm:py-24">
           <h2 className="text-center font-display text-3xl font-medium tracking-tight sm:text-4xl">
-            How it works
+            {t("section.howItWorks")}
           </h2>
 
           <div className="mt-12 grid gap-10 sm:grid-cols-3 sm:gap-6">
             {steps.map((step, i) => (
-              <div key={step.title} className="flex flex-col items-start">
+              <div key={step.key} className="flex flex-col items-start">
                 <div className="flex items-center gap-3">
                   <span className="flex h-9 w-9 items-center justify-center rounded-full border text-sm font-semibold">
                     {i + 1}
                   </span>
                   <step.icon className="h-5 w-5 text-foreground" />
                 </div>
-                <h3 className="mt-4 text-lg font-semibold">{step.title}</h3>
+                <h3 className="mt-4 text-lg font-semibold">
+                  {t(`${step.key}.title`)}
+                </h3>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  {step.desc}
+                  {t(`${step.key}.desc`)}
                 </p>
               </div>
             ))}
@@ -252,19 +195,21 @@ export default function Home() {
       <section className="border-t">
         <div className="mx-auto max-w-6xl px-6 py-20 sm:px-10 sm:py-24">
           <h2 className="text-center font-display text-3xl font-medium tracking-tight sm:text-4xl">
-            Who is it for
+            {t("section.whoIsItFor")}
           </h2>
 
           <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-3">
             {audience.map((item) => (
               <div
-                key={item.title}
+                key={item.key}
                 className="rounded-xl border p-6 transition hover:border-primary"
               >
                 <item.icon className="h-6 w-6 text-foreground" />
-                <h3 className="mt-4 text-lg font-semibold">{item.title}</h3>
+                <h3 className="mt-4 text-lg font-semibold">
+                  {t(`${item.key}.title`)}
+                </h3>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  {item.desc}
+                  {t(`${item.key}.desc`)}
                 </p>
               </div>
             ))}
@@ -279,12 +224,10 @@ export default function Home() {
             <ShieldCheck className="h-7 w-7 text-green-400" />
           </span>
           <h2 className="mt-6 font-display text-3xl font-medium tracking-tight text-balance sm:text-4xl">
-            Your data never leaves your infrastructure
+            {t("privacy.title")}
           </h2>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-background/70 sm:text-lg">
-            Analysis runs on a local AI model (Ollama) on your own server. No
-            third-party cloud, no data sent anywhere — your confidential
-            documents stay where they belong.
+            {t("privacy.body")}
           </p>
         </div>
       </section>
@@ -297,18 +240,17 @@ export default function Home() {
             <div className="flex flex-col gap-6 rounded-2xl border bg-card p-8 sm:flex-row sm:items-center sm:justify-between sm:p-10">
               <div>
                 <h3 className="font-display text-2xl font-medium tracking-tight sm:text-3xl">
-                  Ready to put your documents to work?
+                  {t("footer.cta.title")}
                 </h3>
                 <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
-                  Try the assistant on your own PDFs — it runs locally, nothing
-                  leaves your machine.
+                  {t("footer.cta.subtitle")}
                 </p>
               </div>
               <Link
                 href="/demo"
                 className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
               >
-                Open Demo
+                {t("common.openDemo")}
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
@@ -320,32 +262,31 @@ export default function Home() {
             <div className="lg:col-span-2">
               <Logo />
               <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
-                Document intelligence for business. From PDF to structured data
-                — locally, without sending data anywhere.
+                {t("footer.brandDesc")}
               </p>
               <div className="mt-5 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs text-muted-foreground">
                 <ShieldCheck className="h-3.5 w-3.5 text-green-600" />
-                Local AI · on-premise
+                {t("footer.localAi")}
               </div>
             </div>
 
             {/* Product */}
             <div>
-              <h4 className="text-sm font-semibold">Product</h4>
+              <h4 className="text-sm font-semibold">{t("footer.product")}</h4>
               <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
                 <li>
                   <a href="#features" className="transition hover:text-foreground">
-                    Features
+                    {t("footer.features")}
                   </a>
                 </li>
                 <li>
                   <a href="#how" className="transition hover:text-foreground">
-                    How it works
+                    {t("common.howItWorks")}
                   </a>
                 </li>
                 <li>
                   <Link href="/demo" className="transition hover:text-foreground">
-                    Live demo
+                    {t("footer.liveDemo")}
                   </Link>
                 </li>
               </ul>
@@ -353,11 +294,11 @@ export default function Home() {
 
             {/* Resources */}
             <div>
-              <h4 className="text-sm font-semibold">Resources</h4>
+              <h4 className="text-sm font-semibold">{t("footer.resources")}</h4>
               <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
                 <li>
                   <a href="#privacy" className="transition hover:text-foreground">
-                    Privacy
+                    {t("footer.privacy")}
                   </a>
                 </li>
                 <li>
@@ -381,7 +322,7 @@ export default function Home() {
             <div className="flex items-center gap-5">
               <span className="inline-flex items-center gap-1.5">
                 <Lock className="h-3.5 w-3.5" />
-                Built for SMEs
+                {t("footer.builtForSmes")}
               </span>
               <a
                 href={GITHUB_URL}
@@ -402,13 +343,12 @@ export default function Home() {
 
 function FeatureCard({
   status,
-  title,
-  desc,
+  featureKey,
 }: {
   status: Status;
-  title: string;
-  desc: string;
+  featureKey: string;
 }) {
+  const { t } = useI18n();
   const s = STATUS[status];
   const Icon = s.icon;
 
@@ -419,16 +359,16 @@ function FeatureCard({
         <span
           className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${s.badgeClass}`}
         >
-          {s.badge}
+          {t(s.badgeKey)}
         </span>
       </div>
-      <h3 className="text-base font-semibold">{title}</h3>
+      <h3 className="text-base font-semibold">{t(`${featureKey}.title`)}</h3>
       <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-        {desc}
+        {t(`${featureKey}.desc`)}
       </p>
       {s.href && (
         <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-foreground opacity-0 transition group-hover:opacity-100">
-          Try it
+          {t("card.tryIt")}
           <ArrowRight className="h-3.5 w-3.5" />
         </span>
       )}

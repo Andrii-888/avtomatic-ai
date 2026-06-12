@@ -6,6 +6,19 @@ Detailed log of work on Avtomatic.AI, grouped by working session.
 
 ## Session 2 — UI/UX polish, hardening & privacy
 
+### Internationalization (5 languages)
+- Full UI translation into **English, Italian, German, French, Russian** with a
+  polished language switcher in every nav; choice persisted in `localStorage`,
+  browser language auto-detected, `<html lang>` kept in sync.
+- `src/i18n/` holds one dictionary per locale. `en.ts` is the source of truth;
+  every other locale is typed `Record<MessageKey, string>`, so a missing key
+  fails `tsc` — guaranteeing all languages stay structurally in sync (verified:
+  101 keys each). Translations are native-level.
+- A client `I18nProvider` exposes `t(key)`; the landing, demo and document pages
+  render entirely from translation keys.
+- Also moved the "Auto Status Updates" card to the Live section now that the
+  feature ships.
+
 ### Background processing & live status (Auto Status Updates)
 - `POST /api/documents/[id]/process` now flips the document to `PROCESSING`
   and returns `202` immediately, running the pipeline after the response via

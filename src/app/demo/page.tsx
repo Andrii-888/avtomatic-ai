@@ -4,6 +4,8 @@ import { useCallback, useEffect, useState, useRef } from "react";
 import { FileText, Upload, Search, Loader2, X, Zap } from "lucide-react";
 import Link from "next/link";
 import { Logo } from "@/components/logo";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { useI18n } from "@/i18n/provider";
 
 interface Document {
   id: string;
@@ -21,6 +23,7 @@ const statusColor: Record<string, string> = {
 };
 
 export default function DemoPage() {
+  const { t } = useI18n();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [uploading, setUploading] = useState(false);
   const [search, setSearch] = useState("");
@@ -103,7 +106,7 @@ export default function DemoPage() {
     if (!file) return;
 
     if (file.size > 15 * 1024 * 1024) {
-      alert("File too large (max 15 MB).");
+      alert(t("demo.fileTooLarge"));
       e.target.value = "";
       return;
     }
@@ -120,7 +123,7 @@ export default function DemoPage() {
         await fetchDocuments();
       } else {
         const data = await res.json().catch(() => ({}));
-        alert(data.error || "Upload failed.");
+        alert(data.error || t("demo.uploadFailed"));
       }
     } finally {
       setUploading(false);
@@ -159,16 +162,19 @@ export default function DemoPage() {
       {/* Nav */}
       <nav className="border-b px-6 sm:px-10 h-16 flex items-center justify-between">
         <Logo />
-        <span className="text-sm text-muted-foreground">
-          AI Document Assistant
-        </span>
+        <div className="flex items-center gap-3">
+          <span className="hidden text-sm text-muted-foreground sm:inline">
+            {t("nav.tagline")}
+          </span>
+          <LanguageSwitcher />
+        </div>
       </nav>
 
       <div className="flex flex-1">
         {/* Sidebar */}
         <aside className="w-64 border-r bg-muted/40 p-4 flex flex-col gap-2">
           <div className="flex items-center justify-between mb-4">
-            <span className="font-semibold text-sm">Documents</span>
+            <span className="font-semibold text-sm">{t("demo.documents")}</span>
             <span className="text-xs text-muted-foreground">
               {documents.length}
             </span>
@@ -176,7 +182,7 @@ export default function DemoPage() {
 
           {filtered.length === 0 && (
             <p className="text-xs text-muted-foreground text-center py-4">
-              No documents yet
+              {t("demo.noDocuments")}
             </p>
           )}
 
@@ -190,7 +196,7 @@ export default function DemoPage() {
               <div className="overflow-hidden flex-1">
                 <p className="text-sm truncate">{doc.title}</p>
                 <p className="text-xs text-muted-foreground">
-                  {doc.type || doc.status}
+                  {doc.type || t(`status.${doc.status}`)}
                 </p>
               </div>
             </Link>
@@ -206,7 +212,7 @@ export default function DemoPage() {
             ) : (
               <Upload className="w-4 h-4" />
             )}
-            {uploading ? "Uploading..." : "Upload Document"}
+            {uploading ? t("demo.uploading") : t("demo.uploadDocument")}
           </button>
           <input
             ref={fileInputRef}
@@ -223,7 +229,7 @@ export default function DemoPage() {
             <Search className="w-4 h-4 text-muted-foreground" />
             <input
               className="flex-1 bg-transparent outline-none text-sm"
-              placeholder="Search documents..."
+              placeholder={t("demo.search")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -232,15 +238,15 @@ export default function DemoPage() {
           {documents.length === 0 && (
             <div className="flex flex-col items-center justify-center flex-1 gap-4 text-center">
               <FileText className="w-12 h-12 text-muted-foreground" />
-              <h2 className="text-xl font-semibold">No documents yet</h2>
+              <h2 className="text-xl font-semibold">{t("demo.noDocuments")}</h2>
               <p className="text-muted-foreground text-sm">
-                Upload a PDF to get started
+                {t("demo.emptySubtitle")}
               </p>
               <button
                 onClick={() => fileInputRef.current?.click()}
                 className="bg-primary text-primary-foreground px-4 py-2 rounded-md text-sm font-medium hover:opacity-90 transition"
               >
-                Upload your first document
+                {t("demo.uploadFirst")}
               </button>
             </div>
           )}
@@ -269,14 +275,14 @@ export default function DemoPage() {
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-muted-foreground">
-                        {doc.type || "Document"}
+                        {doc.type || t("status.document")}
                       </span>
                       <span
                         className={`text-xs px-2 py-0.5 rounded-full ${
                           statusColor[doc.status] || "bg-muted"
                         }`}
                       >
-                        {doc.status}
+                        {t(`status.${doc.status}`)}
                       </span>
                     </div>
                   </Link>
@@ -288,7 +294,7 @@ export default function DemoPage() {
                       className="mt-3 w-full flex items-center justify-center gap-2 text-xs border rounded-md py-1.5 hover:border-primary hover:text-primary transition"
                     >
                       <Zap className="w-3 h-3" />
-                      Analyze
+                      {t("demo.analyze")}
                     </button>
                   )}
 
@@ -296,7 +302,7 @@ export default function DemoPage() {
                   {doc.status === "PROCESSING" && (
                     <div className="mt-3 w-full flex items-center justify-center gap-2 text-xs text-muted-foreground py-1.5">
                       <Loader2 className="w-3 h-3 animate-spin" />
-                      Analyzing...
+                      {t("demo.analyzing")}
                     </div>
                   )}
                 </div>
