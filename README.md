@@ -126,8 +126,9 @@ implementations selected via `STORAGE_PROVIDER`: `supabase` (default in use),
   files are reachable only via signed URLs.
 - **Password gate** — a `proxy.ts` (Next 16's renamed middleware) protects the
   whole site behind a single shared password (`DEMO_PASSWORD`). Unauthenticated
-  requests redirect to `/login`; a correct password sets a 30-day `demo-auth`
-  cookie. Disabled automatically when `DEMO_PASSWORD` is unset.
+  requests redirect to `/login` (a localized form with a custom empty-field
+  popup); a correct password sets a 30-day `demo-auth` cookie. Disabled
+  automatically when `DEMO_PASSWORD` is unset.
 
 ### Internationalization (i18n)
 

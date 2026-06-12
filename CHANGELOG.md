@@ -6,6 +6,14 @@ Detailed log of work on Avtomatic.AI, grouped by working session.
 
 ## Session 2 — UI/UX polish, hardening & privacy
 
+### Login UX & responsive polish
+- The login form became a client component (server action extracted) with a
+  custom top-of-page popup when the password is empty and submit is pressed —
+  replacing native browser validation; the form no longer submits.
+- Fully localized the login page into all 5 languages.
+- Hide the nav "Open Demo" button on mobile (`hidden sm:inline-flex`) to declutter
+  the top bar — the language switcher stays.
+
 ### Document search
 - `GET /api/documents?q=` searches `title`, `content` and `summary`
   (case-insensitive Prisma `contains`); empty `q` returns everything.
