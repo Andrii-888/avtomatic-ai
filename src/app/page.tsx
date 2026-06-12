@@ -74,7 +74,7 @@ const features: { status: Status; key: string }[] = [
   { status: "ready", key: "features.privacy" },
   { status: "ready", key: "features.summary" },
   { status: "ready", key: "features.status" },
-  { status: "coming", key: "features.chat" },
+  { status: "ready", key: "features.chat" },
   { status: "coming", key: "features.search" },
   { status: "coming", key: "features.cloud" },
   { status: "coming", key: "features.export" },
