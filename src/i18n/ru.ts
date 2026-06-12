@@ -94,6 +94,7 @@ export const ru: Record<MessageKey, string> = {
 
   "demo.documents": "Документы",
   "demo.noDocuments": "Пока нет документов",
+  "demo.noResults": "Документы не найдены",
   "demo.uploadDocument": "Загрузить документ",
   "demo.uploading": "Загрузка...",
   "demo.search": "Поиск документов...",

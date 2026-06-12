@@ -94,6 +94,7 @@ export const it: Record<MessageKey, string> = {
 
   "demo.documents": "Documenti",
   "demo.noDocuments": "Ancora nessun documento",
+  "demo.noResults": "Nessun documento trovato",
   "demo.uploadDocument": "Carica documento",
   "demo.uploading": "Caricamento...",
   "demo.search": "Cerca documenti...",

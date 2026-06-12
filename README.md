@@ -149,7 +149,7 @@ src/
 │   │   ├── page.tsx                 # Documents list + upload + delete + analyze
 │   │   └── doc/[id]/page.tsx        # Document viewer + AI analysis cards
 │   └── api/documents/
-│       ├── route.ts                 # GET list
+│       ├── route.ts                 # GET list / search (?q=)
 │       ├── upload/route.ts          # POST upload
 │       └── [id]/
 │           ├── route.ts             # GET (incl. extractions) / DELETE

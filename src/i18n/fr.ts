@@ -95,6 +95,7 @@ export const fr: Record<MessageKey, string> = {
 
   "demo.documents": "Documents",
   "demo.noDocuments": "Aucun document pour l'instant",
+  "demo.noResults": "Aucun document trouvé",
   "demo.uploadDocument": "Importer un document",
   "demo.uploading": "Importation...",
   "demo.search": "Rechercher des documents...",

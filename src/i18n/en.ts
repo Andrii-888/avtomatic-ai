@@ -96,6 +96,7 @@ export const en = {
   // demo workspace
   "demo.documents": "Documents",
   "demo.noDocuments": "No documents yet",
+  "demo.noResults": "No documents found",
   "demo.uploadDocument": "Upload Document",
   "demo.uploading": "Uploading...",
   "demo.search": "Search documents...",

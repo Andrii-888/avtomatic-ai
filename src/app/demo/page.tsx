@@ -30,9 +30,11 @@ export default function DemoPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   // Active status-polling intervals, keyed by document id.
   const pollRef = useRef<Record<string, ReturnType<typeof setInterval>>>({});
+  const didMount = useRef(false);
 
-  const fetchDocuments = async () => {
-    const res = await fetch("/api/documents");
+  const fetchDocuments = async (q = "") => {
+    const res = await fetch(`/api/documents?q=${encodeURIComponent(q)}`);
+    if (!res.ok) return;
     const data = await res.json();
     setDocuments(data.documents || []);
   };
@@ -93,6 +95,18 @@ export default function DemoPage() {
     };
   }, [startPolling]);
 
+  // Debounced server-side search (skips the initial mount load above).
+  useEffect(() => {
+    if (!didMount.current) {
+      didMount.current = true;
+      return;
+    }
+    const handle = setTimeout(() => {
+      void fetchDocuments(search.trim());
+    }, 300);
+    return () => clearTimeout(handle);
+  }, [search]);
+
   // Clear every interval on unmount.
   useEffect(() => {
     const timers = pollRef.current;
@@ -120,7 +134,7 @@ export default function DemoPage() {
         body: formData,
       });
       if (res.ok) {
-        await fetchDocuments();
+        await fetchDocuments(search.trim());
       } else {
         const data = await res.json().catch(() => ({}));
         alert(data.error || t("demo.uploadFailed"));
@@ -153,9 +167,7 @@ export default function DemoPage() {
     startPolling(id);
   };
 
-  const filtered = documents.filter((d) =>
-    d.title.toLowerCase().includes(search.toLowerCase())
-  );
+  const hasQuery = search.trim().length > 0;
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
@@ -180,13 +192,13 @@ export default function DemoPage() {
             </span>
           </div>
 
-          {filtered.length === 0 && (
+          {documents.length === 0 && (
             <p className="text-xs text-muted-foreground text-center py-4">
-              {t("demo.noDocuments")}
+              {hasQuery ? t("demo.noResults") : t("demo.noDocuments")}
             </p>
           )}
 
-          {filtered.map((doc) => (
+          {documents.map((doc) => (
             <Link
               key={doc.id}
               href={`/demo/doc/${doc.id}`}
@@ -235,7 +247,14 @@ export default function DemoPage() {
             />
           </div>
 
-          {documents.length === 0 && (
+          {documents.length === 0 && hasQuery && (
+            <div className="flex flex-col items-center justify-center flex-1 gap-3 text-center">
+              <Search className="w-10 h-10 text-muted-foreground" />
+              <h2 className="text-lg font-semibold">{t("demo.noResults")}</h2>
+            </div>
+          )}
+
+          {documents.length === 0 && !hasQuery && (
             <div className="flex flex-col items-center justify-center flex-1 gap-4 text-center">
               <FileText className="w-12 h-12 text-muted-foreground" />
               <h2 className="text-xl font-semibold">{t("demo.noDocuments")}</h2>
@@ -253,7 +272,7 @@ export default function DemoPage() {
 
           {documents.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl">
-              {filtered.map((doc) => (
+              {documents.map((doc) => (
                 <div
                   key={doc.id}
                   className="relative group border rounded-xl p-4 hover:border-primary transition"

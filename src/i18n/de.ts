@@ -95,6 +95,7 @@ export const de: Record<MessageKey, string> = {
 
   "demo.documents": "Dokumente",
   "demo.noDocuments": "Noch keine Dokumente",
+  "demo.noResults": "Keine Dokumente gefunden",
   "demo.uploadDocument": "Dokument hochladen",
   "demo.uploading": "Wird hochgeladen...",
   "demo.search": "Dokumente suchen...",

@@ -6,6 +6,14 @@ Detailed log of work on Avtomatic.AI, grouped by working session.
 
 ## Session 2 — UI/UX polish, hardening & privacy
 
+### Document search
+- `GET /api/documents?q=` searches `title`, `content` and `summary`
+  (case-insensitive Prisma `contains`); empty `q` returns everything.
+- Demo workspace switched from client-side title filtering to debounced (300ms)
+  server-side search, with a localized "No documents found" empty state.
+- Localized `demo.noResults` across all 5 languages; moved the now-shipped
+  "Document Search" feature card to the Live section.
+
 ### Sprint 4 — Chat with Document
 - Added a `chat()` method to `AIProvider` / `OllamaProvider` (free-text Q&A over
   the document content, capped at 6k chars).
