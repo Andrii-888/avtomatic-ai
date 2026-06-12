@@ -16,6 +16,8 @@ Detailed log of work on Avtomatic.AI, grouped by working session.
   bubbles (right/left, distinct colors), input + Send, a loader while answering,
   autoscroll, and graceful "AI unavailable" handling.
 - Localized into all 5 languages. Verified locally end-to-end against Ollama.
+- Audit hardening: persist both messages only after a successful answer (no
+  orphaned user message on failure) and cap message length at 2000 chars.
 
 ### Password gate (site-wide access protection)
 - Added `src/proxy.ts` — Next 16's renamed `middleware` convention — that gates

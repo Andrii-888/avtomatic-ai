@@ -153,7 +153,8 @@ src/
 │       ├── upload/route.ts          # POST upload
 │       └── [id]/
 │           ├── route.ts             # GET (incl. extractions) / DELETE
-│           └── process/route.ts     # POST run pipeline
+│           ├── process/route.ts     # POST run pipeline
+│           └── chat/route.ts        # POST ask / GET history
 ├── lib/
 │   ├── ai/                          # AI provider abstraction
 │   ├── storage/                     # Pluggable storage providers

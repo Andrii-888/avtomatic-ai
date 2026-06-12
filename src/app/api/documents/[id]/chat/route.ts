@@ -22,7 +22,9 @@ export async function POST(
     const { id } = await params;
     const body = await request.json().catch(() => ({}));
     const message =
-      typeof body.message === "string" ? body.message.trim() : "";
+      typeof body.message === "string"
+        ? body.message.trim().slice(0, 2000)
+        : "";
 
     if (!message) {
       return NextResponse.json({ error: "Message required" }, { status: 400 });
@@ -44,13 +46,13 @@ export async function POST(
       return NextResponse.json({ error: "AI not available" }, { status: 503 });
     }
 
-    // Persist the user message before calling the model.
+    // Call the model first, then persist both messages — so a failed answer
+    // never leaves an orphaned user message in the history.
+    const answer = await ai.chat({ content: document.content, message });
+
     await prisma.chatMessage.create({
       data: { documentId: id, role: "user", content: message },
     });
-
-    const answer = await ai.chat({ content: document.content, message });
-
     const assistant = await prisma.chatMessage.create({
       data: { documentId: id, role: "assistant", content: answer },
     });
