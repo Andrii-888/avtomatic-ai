@@ -123,6 +123,10 @@ implementations selected via `STORAGE_PROVIDER`: `supabase` (default in use),
 - The Supabase bucket is **private** and `SUPABASE_SERVICE_ROLE_KEY` is set
   (server-only) so signing works against it — the public object path is blocked,
   files are reachable only via signed URLs.
+- **Password gate** — a `proxy.ts` (Next 16's renamed middleware) protects the
+  whole site behind a single shared password (`DEMO_PASSWORD`). Unauthenticated
+  requests redirect to `/login`; a correct password sets a 30-day `demo-auth`
+  cookie. Disabled automatically when `DEMO_PASSWORD` is unset.
 
 ### Internationalization (i18n)
 
@@ -203,6 +207,9 @@ SUPABASE_ANON_KEY="..."
 SUPABASE_SERVICE_ROLE_KEY="..."   # server-only; required for signed URLs on a private bucket
 SUPABASE_BUCKET="avtomatic-ai"
 
+# Access gate (optional — when unset the whole site is open)
+DEMO_PASSWORD="change-me"
+
 # AI (local only — leave unset/none in the cloud)
 AI_PROVIDER="ollama"               # ollama | none
 OLLAMA_BASE_URL="http://localhost:11434"
@@ -230,7 +237,8 @@ OLLAMA_MODEL="llama3.2"
 
 - ✅ **Auto status updates** — background processing + live polling (done).
 - ✅ **Private storage** — private Supabase bucket + signed URLs (done).
-- **Authentication** — per-user documents (currently the demo is open).
+- ✅ **Access gate** — shared-password site protection via `proxy.ts` (done).
+- **Authentication** — per-user accounts and documents (the gate is shared).
 - **Cloud AI providers** — `ClaudeProvider` / `OpenAIProvider` for clients who
   opt into hosted analysis.
 - **Chat over documents** — the `ChatMessage` model is already in the schema.

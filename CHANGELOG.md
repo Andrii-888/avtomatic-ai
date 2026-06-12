@@ -6,6 +6,15 @@ Detailed log of work on Avtomatic.AI, grouped by working session.
 
 ## Session 2 — UI/UX polish, hardening & privacy
 
+### Password gate (site-wide access protection)
+- Added `src/proxy.ts` — Next 16's renamed `middleware` convention — that gates
+  the whole site behind a shared password. Unauthenticated requests redirect to
+  `/login`; the gate is disabled when `DEMO_PASSWORD` is unset.
+- `/login` is a minimal Server Action form: a correct password sets a 30-day
+  httpOnly `demo-auth` cookie and redirects home; wrong password shows an error.
+- `DEMO_PASSWORD` added to `.env.local` and Vercel. Verified locally: gated
+  routes redirect, correct password authenticates, wrong password is rejected.
+
 ### Internationalization (5 languages)
 - Full UI translation into **English, Italian, German, French, Russian** with a
   polished language switcher in every nav; choice persisted in `localStorage`,
