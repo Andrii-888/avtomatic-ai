@@ -60,8 +60,10 @@ Detailed log of work on Avtomatic.AI, grouped by working session.
 - `extractText` reads via a 120s signed URL from `storageKey`; the document API
   returns a fresh 1-hour signed `fileUrl`; the viewer uses it (falls back to the
   legacy `blobUrl`).
-- Manual steps to fully enable privacy: make the Supabase bucket private and set
-  `SUPABASE_SERVICE_ROLE_KEY` (local + Vercel).
+- **Privacy now active**: the Supabase bucket is private and
+  `SUPABASE_SERVICE_ROLE_KEY` is set (local + Vercel). Verified in production —
+  the public object path is blocked ("Bucket not found") while signed URLs serve
+  the file (200).
 
 ### Docs
 - Rewrote `README.md` and `AGENTS.md`; added this changelog.

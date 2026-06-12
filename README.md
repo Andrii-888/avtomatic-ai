@@ -120,8 +120,9 @@ implementations selected via `STORAGE_PROVIDER`: `supabase` (default in use),
   document API returns a fresh 1-hour URL; server-side extraction signs for 120s.
 - **Upload hardening** — PDF-only, 15 MB limit, and filenames sanitized into
   path-safe storage keys (`buildStorageKey`).
-- For full privacy the Supabase bucket must be **private** and
-  `SUPABASE_SERVICE_ROLE_KEY` set (server-only) so signing works against it.
+- The Supabase bucket is **private** and `SUPABASE_SERVICE_ROLE_KEY` is set
+  (server-only) so signing works against it — the public object path is blocked,
+  files are reachable only via signed URLs.
 
 ### Internationalization (i18n)
 
@@ -228,9 +229,8 @@ OLLAMA_MODEL="llama3.2"
 ## Roadmap
 
 - ✅ **Auto status updates** — background processing + live polling (done).
+- ✅ **Private storage** — private Supabase bucket + signed URLs (done).
 - **Authentication** — per-user documents (currently the demo is open).
-- **Private bucket** — flip Supabase to private + set `SUPABASE_SERVICE_ROLE_KEY`
-  to fully activate the signed-URL privacy already wired in code.
 - **Cloud AI providers** — `ClaudeProvider` / `OpenAIProvider` for clients who
   opt into hosted analysis.
 - **Chat over documents** — the `ChatMessage` model is already in the schema.
