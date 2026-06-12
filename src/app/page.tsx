@@ -106,7 +106,7 @@ export default function Home() {
           <LanguageSwitcher />
           <Link
             href="/demo"
-            className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
+            className="hidden items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90 sm:inline-flex"
           >
             {t("common.openDemo")}
             <ArrowRight className="h-3.5 w-3.5" />

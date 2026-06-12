@@ -144,5 +144,11 @@ export const de: Record<MessageKey, string> = {
   "chat.error": "Es konnte keine Antwort abgerufen werden.",
   "chat.unavailable": "Der KI-Chat ist in dieser Umgebung nicht verfügbar.",
 
+  "login.subtitle": "Gib das Passwort ein, um auf die Demo zuzugreifen.",
+  "login.password": "Passwort",
+  "login.enter": "Anmelden",
+  "login.incorrect": "Falsches Passwort.",
+  "login.required": "Bitte gib das Passwort ein.",
+
   "lang.label": "Sprache",
 };

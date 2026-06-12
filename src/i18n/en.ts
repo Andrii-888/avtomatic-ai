@@ -148,6 +148,13 @@ export const en = {
   "chat.error": "Couldn't get an answer.",
   "chat.unavailable": "AI chat is not available in this environment.",
 
+  // login gate
+  "login.subtitle": "Enter the password to access the demo.",
+  "login.password": "Password",
+  "login.enter": "Enter",
+  "login.incorrect": "Incorrect password.",
+  "login.required": "Please enter the password.",
+
   // language switcher
   "lang.label": "Language",
 } as const;

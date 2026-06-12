@@ -143,5 +143,11 @@ export const ru: Record<MessageKey, string> = {
   "chat.error": "Не удалось получить ответ.",
   "chat.unavailable": "ИИ-чат недоступен в этом окружении.",
 
+  "login.subtitle": "Введите пароль для доступа к демо.",
+  "login.password": "Пароль",
+  "login.enter": "Войти",
+  "login.incorrect": "Неверный пароль.",
+  "login.required": "Пожалуйста, введите пароль.",
+
   "lang.label": "Язык",
 };

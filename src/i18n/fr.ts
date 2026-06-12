@@ -144,5 +144,11 @@ export const fr: Record<MessageKey, string> = {
   "chat.error": "Impossible d'obtenir une réponse.",
   "chat.unavailable": "Le chat IA n'est pas disponible dans cet environnement.",
 
+  "login.subtitle": "Saisissez le mot de passe pour accéder à la démo.",
+  "login.password": "Mot de passe",
+  "login.enter": "Entrer",
+  "login.incorrect": "Mot de passe incorrect.",
+  "login.required": "Veuillez saisir le mot de passe.",
+
   "lang.label": "Langue",
 };
