@@ -183,8 +183,8 @@ export default function DemoPage() {
       </nav>
 
       <div className="flex flex-1">
-        {/* Sidebar */}
-        <aside className="w-64 border-r bg-muted/40 p-4 flex flex-col gap-2">
+        {/* Sidebar (desktop only) */}
+        <aside className="hidden w-64 shrink-0 border-r bg-muted/40 p-4 lg:flex lg:flex-col lg:gap-2">
           <div className="flex items-center justify-between mb-4">
             <span className="font-semibold text-sm">{t("demo.documents")}</span>
             <span className="text-xs text-muted-foreground">
@@ -236,15 +236,30 @@ export default function DemoPage() {
         </aside>
 
         {/* Main */}
-        <main className="flex-1 p-8 flex flex-col gap-6">
-          <div className="flex items-center gap-2 border rounded-md px-4 py-2 max-w-xl">
-            <Search className="w-4 h-4 text-muted-foreground" />
-            <input
-              className="flex-1 bg-transparent outline-none text-sm"
-              placeholder={t("demo.search")}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+        <main className="flex min-w-0 flex-1 flex-col gap-6 p-4 sm:p-6 lg:p-8">
+          <div className="flex items-center gap-2">
+            <div className="flex flex-1 items-center gap-2 rounded-md border px-4 py-2 sm:max-w-xl">
+              <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
+              <input
+                className="w-full flex-1 bg-transparent text-sm outline-none"
+                placeholder={t("demo.search")}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+            {/* Upload (mobile only — sidebar is hidden) */}
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              aria-label={t("demo.uploadDocument")}
+              className="flex shrink-0 items-center justify-center rounded-md bg-primary p-2.5 text-primary-foreground transition hover:opacity-90 disabled:opacity-50 lg:hidden"
+            >
+              {uploading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Upload className="h-4 w-4" />
+              )}
+            </button>
           </div>
 
           {documents.length === 0 && hasQuery && (

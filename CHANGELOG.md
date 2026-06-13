@@ -6,6 +6,23 @@ Detailed log of work on Avtomatic.AI, grouped by working session.
 
 ## Session 2 — UI/UX polish, hardening & privacy
 
+### Mobile responsiveness
+- Reworked the demo workspace for small screens: the desktop sidebar is hidden
+  on mobile (`hidden lg:flex`), the document list renders as a single-column card
+  grid, and an upload button moved into the toolbar (search + upload) so nothing
+  overflows. Document viewer and landing verified clean at 390px.
+
+### Sample document generators & multilingual test
+- Added `scripts/gen_samples.py` (invoice/contract/cv/certificate, EN) and
+  `scripts/gen_samples_intl.py` (DE invoice, FR CV, IT contract, RU certificate
+  via an embedded Unicode font) to produce fictional test PDFs.
+- Pipeline test results (Ollama `llama3.2`): language detection is accurate on
+  real non-English docs (de/fr/it/ru all correct); document-type is correct for
+  invoice/contract/cv but `certificate` is mis-read as `cv`; and the small model
+  does NOT honor the "summary in document language" instruction (summaries come
+  back in English). Both gaps are model-quality limits — a larger model
+  (`llama3.1:8b`) is expected to fix them with no code changes.
+
 ### Localized summaries & swappable model
 - Analysis prompt now asks the model to write the `summary` in the document's
   own detected language instead of always English.
