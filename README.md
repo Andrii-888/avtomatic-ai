@@ -35,6 +35,7 @@ hosted demo never ships document text to an external provider.
 | **Polish** | Landing redesign, shared UI, upload hardening, **signed URLs** | ✅ Done |
 | **i18n** | 5-language UI (EN/IT/DE/FR/RU) with a language switcher | ✅ Done |
 | **Sprint 4** | Chat with Document (Ollama Q&A over `content`, history) | ✅ Done |
+| **Responsive** | Mobile-first UI, overflow-safe, `dvh` viewport stability | ✅ Done |
 
 See [`CHANGELOG.md`](./CHANGELOG.md) for the detailed history.
 

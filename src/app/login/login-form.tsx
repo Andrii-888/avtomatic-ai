@@ -25,7 +25,7 @@ export function LoginForm({ hasError }: { hasError: boolean }) {
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-background px-6 text-foreground">
+    <main className="flex min-h-dvh items-center justify-center bg-background px-6 text-foreground">
       {/* Top-tier popup when the code is missing */}
       {popup && (
         <div className="pointer-events-none fixed left-1/2 top-6 z-50 -translate-x-1/2">

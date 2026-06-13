@@ -212,7 +212,7 @@ export default function DocumentViewerPage({
   const fileUrl = document?.fileUrl ?? document?.blobUrl ?? null;
 
   return (
-    <div className="flex min-h-screen flex-col overflow-x-hidden bg-background text-foreground">
+    <div className="flex min-h-dvh flex-col overflow-x-hidden bg-background text-foreground">
       {/* Nav */}
       <nav className="flex items-center justify-between gap-3 border-b px-6 sm:px-10 h-16">
         <Logo />
@@ -307,7 +307,7 @@ export default function DocumentViewerPage({
               <object
                 data={fileUrl}
                 type="application/pdf"
-                className="h-[60vh] w-full rounded-lg border bg-muted/30 sm:h-[75vh] lg:h-[80vh]"
+                className="h-[60dvh] w-full rounded-lg border bg-muted/30 sm:h-[75dvh] lg:h-[80dvh]"
               >
                 {/* Fallback for browsers / mobile that can't embed PDFs */}
                 <div className="flex h-full flex-col items-center justify-center gap-4 p-6 text-center">

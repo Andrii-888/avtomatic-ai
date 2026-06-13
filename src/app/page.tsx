@@ -98,7 +98,7 @@ export default function Home() {
   const { t } = useI18n();
 
   return (
-    <main className="flex min-h-screen flex-col overflow-x-hidden bg-background text-foreground">
+    <main className="flex min-h-dvh flex-col overflow-x-hidden bg-background text-foreground">
       {/* NAV */}
       <nav className="sticky top-0 z-20 flex h-16 items-center justify-between border-b bg-background/80 px-6 backdrop-blur sm:px-10">
         <Logo />

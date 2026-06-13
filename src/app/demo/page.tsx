@@ -170,7 +170,7 @@ export default function DemoPage() {
   const hasQuery = search.trim().length > 0;
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-background text-foreground flex flex-col">
+    <div className="min-h-dvh overflow-x-hidden bg-background text-foreground flex flex-col">
       {/* Nav */}
       <nav className="border-b px-6 sm:px-10 h-16 flex items-center justify-between">
         <Logo />
