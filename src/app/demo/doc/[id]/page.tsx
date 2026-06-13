@@ -59,7 +59,10 @@ function formatEntityValue(value: unknown) {
     return (
       <div className="flex flex-wrap gap-1.5">
         {value.map((v, i) => (
-          <span key={i} className="rounded-full bg-muted px-2 py-0.5 text-xs">
+          <span
+            key={i}
+            className="max-w-full rounded-full bg-muted px-2 py-0.5 text-xs [overflow-wrap:anywhere]"
+          >
             {typeof v === "object" ? JSON.stringify(v) : String(v)}
           </span>
         ))}
@@ -71,10 +74,14 @@ function formatEntityValue(value: unknown) {
   }
   if (typeof value === "object") {
     return (
-      <span className="text-sm wrap-break-words">{JSON.stringify(value)}</span>
+      <span className="text-sm [overflow-wrap:anywhere]">
+        {JSON.stringify(value)}
+      </span>
     );
   }
-  return <span className="text-sm wrap-break-words">{String(value)}</span>;
+  return (
+    <span className="text-sm [overflow-wrap:anywhere]">{String(value)}</span>
+  );
 }
 
 export default function DocumentViewerPage({
@@ -205,7 +212,7 @@ export default function DocumentViewerPage({
   const fileUrl = document?.fileUrl ?? document?.blobUrl ?? null;
 
   return (
-    <div className="flex min-h-screen flex-col bg-background text-foreground">
+    <div className="flex min-h-screen flex-col overflow-x-hidden bg-background text-foreground">
       {/* Nav */}
       <nav className="flex items-center justify-between gap-3 border-b px-6 sm:px-10 h-16">
         <Logo />
@@ -441,7 +448,7 @@ export default function DocumentViewerPage({
                       }`}
                     >
                       <div
-                        className={`max-w-[80%] whitespace-pre-wrap rounded-2xl px-3.5 py-2 text-sm ${
+                        className={`max-w-[80%] whitespace-pre-wrap rounded-2xl px-3.5 py-2 text-sm [overflow-wrap:anywhere] ${
                           m.role === "user"
                             ? "bg-primary text-primary-foreground"
                             : "bg-muted text-foreground"

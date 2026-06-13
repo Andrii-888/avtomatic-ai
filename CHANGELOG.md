@@ -11,6 +11,11 @@ Detailed log of work on Avtomatic.AI, grouped by working session.
   on mobile (`hidden lg:flex`), the document list renders as a single-column card
   grid, and an upload button moved into the toolbar (search + upload) so nothing
   overflows. Document viewer and landing verified clean at 390px.
+- Content-overflow hardening: long entity values, JSON and chat messages wrap via
+  `overflow-wrap: anywhere`; card titles/types truncate; page roots use
+  `overflow-x-hidden`. Verified 0px horizontal overflow on all pages at 390px,
+  even with worst-case unbroken strings. Card delete button is now tap-visible
+  on touch (no hover dependency).
 
 ### Sample document generators & multilingual test
 - Added `scripts/gen_samples.py` (invoice/contract/cv/certificate, EN) and

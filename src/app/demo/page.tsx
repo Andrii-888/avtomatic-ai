@@ -170,7 +170,7 @@ export default function DemoPage() {
   const hasQuery = search.trim().length > 0;
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
+    <div className="min-h-screen overflow-x-hidden bg-background text-foreground flex flex-col">
       {/* Nav */}
       <nav className="border-b px-6 sm:px-10 h-16 flex items-center justify-between">
         <Logo />
@@ -292,27 +292,28 @@ export default function DemoPage() {
                   key={doc.id}
                   className="relative group border rounded-xl p-4 hover:border-primary transition"
                 >
-                  {/* Крестик удаления */}
+                  {/* Крестик удаления — всегда виден на тач, hover-reveal на десктопе */}
                   <button
                     onClick={(e) => handleDelete(e, doc.id)}
-                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition text-muted-foreground hover:text-red-500"
+                    aria-label="Delete"
+                    className="absolute top-2 right-2 z-10 text-muted-foreground transition hover:text-red-500 opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
                   >
                     <X className="w-4 h-4" />
                   </button>
 
                   <Link href={`/demo/doc/${doc.id}`} className="block">
-                    <div className="flex items-center gap-3 mb-3">
-                      <FileText className="w-5 h-5" />
-                      <p className="text-sm font-medium truncate pr-4">
+                    <div className="flex min-w-0 items-center gap-3 mb-3 pr-6">
+                      <FileText className="w-5 h-5 shrink-0" />
+                      <p className="min-w-0 truncate text-sm font-medium">
                         {doc.title}
                       </p>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="min-w-0 truncate text-xs text-muted-foreground">
                         {doc.type || t("status.document")}
                       </span>
                       <span
-                        className={`text-xs px-2 py-0.5 rounded-full ${
+                        className={`shrink-0 text-xs px-2 py-0.5 rounded-full ${
                           statusColor[doc.status] || "bg-muted"
                         }`}
                       >
