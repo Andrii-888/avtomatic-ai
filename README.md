@@ -216,8 +216,12 @@ DEMO_PASSWORD="change-me"
 # AI (local only — leave unset/none in the cloud)
 AI_PROVIDER="ollama"               # ollama | none
 OLLAMA_BASE_URL="http://localhost:11434"
-OLLAMA_MODEL="llama3.2"
+OLLAMA_MODEL="llama3.2"             # swap to llama3.1:8b (or any model) for more accurate language detection — no code changes
 ```
+
+> The AI model is read from `OLLAMA_MODEL` in `ollama.ts`, so it can be swapped
+> (e.g. to `llama3.1:8b`) for better quality — including more accurate document
+> language detection — without touching the code.
 
 > **On Vercel**, leave `AI_PROVIDER` unset (or `none`). The pipeline still
 > extracts text and reaches `READY`; AI analysis is skipped because `localhost`

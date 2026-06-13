@@ -12,6 +12,8 @@ export class OllamaProvider implements AIProvider {
 
     const prompt = `You are a document analysis assistant. Analyze the following document and return ONLY a JSON object with no explanation, no markdown, no code blocks.
 
+First detect the document language (it/de/fr/ru/en) from the words the text is written in. Write the summary in the SAME language as the document — never translate it to another language.
+
 Document filename: ${input.filename}
 Document text:
 ${input.text.slice(0, 3000)}
@@ -21,7 +23,7 @@ Return this exact JSON structure:
   "documentType": "cv",
   "language": "en",
   "confidence": 0.95,
-  "summary": "brief summary in English",
+  "summary": "brief summary in the SAME language as the document (field language)",
   "entities": {
     "name": "John Smith",
     "email": "john@example.com",

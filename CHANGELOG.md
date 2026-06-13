@@ -6,6 +6,16 @@ Detailed log of work on Avtomatic.AI, grouped by working session.
 
 ## Session 2 — UI/UX polish, hardening & privacy
 
+### Localized summaries & swappable model
+- Analysis prompt now asks the model to write the `summary` in the document's
+  own detected language instead of always English.
+- Confirmed the Ollama model is read from `OLLAMA_MODEL` (env) in `ollama.ts`, so
+  it can be swapped (e.g. `llama3.1:8b`) for more accurate language detection
+  with no code changes — documented in `.env.local` and the README.
+- Note: the small default `llama3.2` can mis-detect language on documents with
+  strong foreign country/currency cues (e.g. a Swiss CHF invoice → "de"); a
+  larger model fixes this.
+
 ### Login UX & responsive polish
 - The login form became a client component (server action extracted) with a
   custom top-of-page popup when the password is empty and submit is pressed —
